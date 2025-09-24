@@ -11,7 +11,7 @@ public abstract class Knot {
     private final List<Connection> OUTBOUND;
     private final int LAYER_ID;
     private double value = 0.0;
-    private double bias = Math.random();
+    private double bias = Math.random() * 0.5;
 
     public Knot(int id) {
         this.LAYER_ID = id;
@@ -40,6 +40,10 @@ public abstract class Knot {
 
     public double value() {
         return this.value;
+    }
+
+    public void reset() {
+        this.value = 0.0;
     }
 
     @Override
