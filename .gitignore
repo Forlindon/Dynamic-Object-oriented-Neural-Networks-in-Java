@@ -30,3 +30,4 @@ bin/
 resources
 src/net/forlindon/dynamic/object-oriented/neural/networks/Test.java
 *.iml
+.idea
