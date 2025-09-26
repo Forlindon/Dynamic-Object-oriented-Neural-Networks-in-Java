@@ -13,7 +13,7 @@ public abstract class Knot extends MulTensor {
 
     private final List<Connection> OUTBOUND;
     private final int LAYER_ID;
-    private Tensor bias = new SimpleTensor(Math.random() * 0.5);
+    public final Tensor BIAS = new SimpleTensor(Math.random() * 0.5);
 
     public Knot(int id) {
         this.LAYER_ID = id;
@@ -30,13 +30,13 @@ public abstract class Knot extends MulTensor {
     @Override
     public void derivative(Tensor... args) {
         super.derivative(args);
-        this.bias.pushGrad(this.grad);
+        this.BIAS.pushGrad(this.grad);
     }
 
     public abstract double activation(double d);
 
     public void pop() {
-        this.val = activation(this.val) + this.bias.val;
+        this.val = activation(this.val) + this.BIAS.val;
         for (Connection c : this.OUTBOUND) {
             c.ff();
         }
@@ -48,28 +48,30 @@ public abstract class Knot extends MulTensor {
         }
     }
 
-    public void push(double d) {
-        this.val += d;
-    }
-
     public double value() {
         return this.val;
     }
 
-    public void reset() {
-        this.val = 0.0;
-    }
-
     @Override
     public String toString() {
-        return String.format( "%s{Value: %.2g, Bias: %.2g, Grad: %.2g, Connections: %d}", Knot.class.getSimpleName(), this.val, this.bias.val, this.grad, this.OUTBOUND.size());
+        return String.format( "%s{Value: %.2g, Grad: %.2g, Bias: %.2g, Grad: %.2g, Connections: %d}", Knot.class.getSimpleName(), this.val, this.grad, this.BIAS.val, this.BIAS.grad, this.OUTBOUND.size());
     }
 
     public double bias() {
-        return bias.val;
+        return BIAS.val;
     }
 
     public int id() {
         return this.LAYER_ID;
+    }
+
+    @Override
+    public void adjust() {
+        super.adjust();
+        this.BIAS.adjust();
+    }
+
+    public List<Connection> getConnections() {
+        return new ArrayList<>(this.OUTBOUND);
     }
 }

@@ -2,6 +2,7 @@ package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
+import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class SequentialLayer extends Layer {
         this.LAYERS = new ArrayList<>();
         for (int i = 0; i < factories.length; i++) {
             this.LAYERS.add(factories[i].apply(i));
-            this.PARAMETERS.addAll(LAYERS.get(i).PARAMETERS);
+            this.KNOTS.addAll(LAYERS.get(i).KNOTS);
         }
     }
 
@@ -49,29 +50,34 @@ public class SequentialLayer extends Layer {
 
     @Override
     public void fullConnect(Layer other, BiFunction<Knot, Knot, Connection> factory) {
-        this.LAYERS.get(this.LAYERS.size()-1).fullConnect(other,factory);
+        this.LAYERS.getLast().fullConnect(other,factory);
     }
 
     @Override
     public void forward(double[] inputs) {
-        this.LAYERS.get(0).forward(inputs);
+        this.LAYERS.getFirst().forward(inputs);
         for (int i = 1; i < this.LAYERS.size(); i++) {
             this.LAYERS.get(i).forward();
         }
     }
 
     @Override
+    public void backward(boolean init) {
+        if (init) this.LAYERS.forEach(l -> l.KNOTS.forEach(knot -> knot.pushGrad(1)));
+        this.backward();
+    }
+
+    @Override
     public void backward() {
-        this.LAYERS.get(this.LAYERS.size()-1).PARAMETERS.forEach(k -> k.pushGrad(1));
         for (int i = this.LAYERS.size()-1; i >= 0; i--) {
             Layer l = this.LAYERS.get(i);
-            l.backward();
+            l.backward(false);
         }
     }
 
     @Override
     public void readValues(double[] vals) {
-        this.LAYERS.get(this.LAYERS.size()-1).readValues(vals);
+        this.LAYERS.getLast().readValues(vals);
     }
 
     public Layer get(int idx) {
@@ -84,11 +90,27 @@ public class SequentialLayer extends Layer {
     }
 
     @Override
-    public List<Knot> getParameters() {
-        List<Knot> params = new ArrayList<>();
+    public List<Knot> getKNOTS() {
+        List<Knot> knots = new ArrayList<>();
         for (Layer l : this.LAYERS) {
-            params.addAll(l.getParameters());
+            knots.addAll(l.getKNOTS());
         }
-        return params;
+        return knots;
+    }
+
+    @Override
+    public List<Tensor> getParameters() {
+        List<Tensor> ts = new ArrayList<>();
+        for (Layer l : this.LAYERS) {
+            ts.addAll(l.getParameters());
+        }
+        return ts;
+    }
+
+    @Override
+    public void clean() {
+        for (Layer l : this.LAYERS) {
+            l.clean();
+        }
     }
 }

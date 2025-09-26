@@ -1,6 +1,7 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
+import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
 public class BaseLayer extends Layer {
     public BaseLayer(int id) {
@@ -9,11 +10,20 @@ public class BaseLayer extends Layer {
 
     @Override
     public void forward() {
-        this.PARAMETERS.forEach(Knot::pop);
+        this.KNOTS.forEach(Knot::pop);
     }
 
     @Override
     public void backward() {
-        this.PARAMETERS.forEach(Knot::backward);
+        this.KNOTS.forEach(Knot::backward);
+    }
+
+    @Override
+    public void clean() {
+        this.KNOTS.forEach(k -> {
+            k.reset();
+            k.BIAS.resetGrad();
+            k.getConnections().forEach(Tensor::resetGrad);
+        });
     }
 }
