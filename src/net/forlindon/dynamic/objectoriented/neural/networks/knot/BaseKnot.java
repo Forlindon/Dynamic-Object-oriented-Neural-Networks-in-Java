@@ -1,4 +1,4 @@
-package knot;
+package net.forlindon.dynamic.objectoriented.neural.networks.knot;
 
 public class BaseKnot extends Knot{
     public BaseKnot(int id) {

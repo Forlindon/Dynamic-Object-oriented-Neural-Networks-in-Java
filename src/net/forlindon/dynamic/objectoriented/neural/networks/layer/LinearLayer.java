@@ -1,6 +1,6 @@
-package layer;
+package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
-import knot.Knot;
+import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 
 import java.util.function.Function;
 

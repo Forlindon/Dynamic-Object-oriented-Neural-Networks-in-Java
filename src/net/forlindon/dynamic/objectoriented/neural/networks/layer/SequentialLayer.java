@@ -1,11 +1,12 @@
-package layer;
+package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
-import connection.Connection;
-import knot.Knot;
+import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
+import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class SequentialLayer extends Layer {
@@ -35,14 +36,14 @@ public class SequentialLayer extends Layer {
         }
     }
 
-    public void fullConnect(Function<Knot, Connection> factory) {
+    public void fullConnect(BiFunction<Knot, Knot, Connection> factory) {
         for (int i = 0; i < this.LAYERS.size()-1; i++) {
             this.LAYERS.get(i).fullConnect(this.LAYERS.get(i+1), factory);
         }
     }
 
     @Override
-    public void fullConnect(Layer other, Function<Knot, Connection> factory) {
+    public void fullConnect(Layer other, BiFunction<Knot, Knot, Connection> factory) {
         fullConnect(factory);
     }
 

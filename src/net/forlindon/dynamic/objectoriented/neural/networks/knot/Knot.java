@@ -1,9 +1,10 @@
-package knot;
+package net.forlindon.dynamic.objectoriented.neural.networks.knot;
 
-import connection.Connection;
+import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class Knot {
@@ -18,9 +19,9 @@ public abstract class Knot {
         this.OUTBOUND = new ArrayList<>();
     }
 
-    public void connect(Knot other, Function<Knot, Connection> factory) {
+    public void connect(Knot other, BiFunction<Knot, Knot, Connection> factory) {
         if (other.LAYER_ID <= this.LAYER_ID) throw new IllegalArgumentException("Invalid LAYER_ID");
-        Connection c = factory.apply(other);
+        Connection c = factory.apply(this, other);
         if (this.OUTBOUND.contains(c)) throw new IllegalArgumentException("No duplicate connections");
         this.OUTBOUND.add(c);
     }
@@ -28,9 +29,9 @@ public abstract class Knot {
     public abstract double activation(double d);
 
     public void pop() {
-        double d = activation(this.value);
+        this.value = activation(this.value);
         for (Connection c : this.OUTBOUND) {
-            c.ff(d);
+            c.ff();
         }
     }
 

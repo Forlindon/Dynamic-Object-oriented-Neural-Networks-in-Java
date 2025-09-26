@@ -1,10 +1,11 @@
-package layer;
+package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
-import connection.Connection;
-import knot.Knot;
+import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
+import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class Layer {
@@ -24,7 +25,7 @@ public abstract class Layer {
 
     public abstract void forward();
 
-    public void fullConnect(Layer other, Function<Knot, Connection> factory) {
+    public void fullConnect(Layer other, BiFunction<Knot, Knot, Connection> factory) {
         for (Knot a : this.PARAMETERS) {
             for (Knot b : other.PARAMETERS) {
                 a.connect(b, factory);
@@ -47,6 +48,10 @@ public abstract class Layer {
             k.push(inputs[i]);
             k.pop();
         }
+    }
+
+    public int id() {
+        return this.LAYER_ID;
     }
 
     @Override
