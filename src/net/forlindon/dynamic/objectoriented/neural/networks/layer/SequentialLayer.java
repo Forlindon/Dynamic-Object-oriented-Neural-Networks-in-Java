@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 public class SequentialLayer extends Layer {
 
-    private final List<Layer> LAYERS;
+    protected final List<Layer> LAYERS;
 
     @SafeVarargs
     public SequentialLayer(Function<Integer, Layer>... factories) {
@@ -21,6 +21,11 @@ public class SequentialLayer extends Layer {
             this.LAYERS.add(factories[i].apply(i));
             this.PARAMETERS.addAll(LAYERS.get(i).PARAMETERS);
         }
+    }
+
+    protected SequentialLayer() {
+        super(-1);
+        this.LAYERS = new ArrayList<>();
     }
 
     public SequentialLayer(Layer... l) {
@@ -44,7 +49,7 @@ public class SequentialLayer extends Layer {
 
     @Override
     public void fullConnect(Layer other, BiFunction<Knot, Knot, Connection> factory) {
-        fullConnect(factory);
+        this.LAYERS.get(this.LAYERS.size()-1).fullConnect(other,factory);
     }
 
     @Override
@@ -52,6 +57,15 @@ public class SequentialLayer extends Layer {
         this.LAYERS.get(0).forward(inputs);
         for (int i = 1; i < this.LAYERS.size(); i++) {
             this.LAYERS.get(i).forward();
+        }
+    }
+
+    @Override
+    public void backward() {
+        this.LAYERS.get(this.LAYERS.size()-1).PARAMETERS.forEach(k -> k.pushGrad(1));
+        for (int i = this.LAYERS.size()-1; i >= 0; i--) {
+            Layer l = this.LAYERS.get(i);
+            l.backward();
         }
     }
 
@@ -67,5 +81,14 @@ public class SequentialLayer extends Layer {
     @Override
     public String toString() {
         return String.format("{%s}",this.LAYERS);
+    }
+
+    @Override
+    public List<Knot> getParameters() {
+        List<Knot> params = new ArrayList<>();
+        for (Layer l : this.LAYERS) {
+            params.addAll(l.getParameters());
+        }
+        return params;
     }
 }

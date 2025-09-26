@@ -50,8 +50,14 @@ public abstract class Layer {
         }
     }
 
+    public abstract void backward();
+
     public int id() {
         return this.LAYER_ID;
+    }
+
+    public List<Knot> getParameters() {
+        return new ArrayList<>(this.PARAMETERS);
     }
 
     @Override

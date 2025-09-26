@@ -11,4 +11,9 @@ public class BaseLayer extends Layer {
     public void forward() {
         this.PARAMETERS.forEach(Knot::pop);
     }
+
+    @Override
+    public void backward() {
+        this.PARAMETERS.forEach(Knot::backward);
+    }
 }
