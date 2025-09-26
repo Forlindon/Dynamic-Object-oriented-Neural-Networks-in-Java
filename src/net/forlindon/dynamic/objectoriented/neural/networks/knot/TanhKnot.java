@@ -1,17 +1,18 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.knot;
 
-public class BaseKnot extends Knot{
-    public BaseKnot(int id) {
+public class TanhKnot extends Knot {
+
+    public TanhKnot(int id) {
         super(id);
     }
 
     @Override
     public double activation(double d) {
-        return d;
+        return (Math.exp(d) - Math.exp(-d)) / (Math.exp(d) + Math.exp(-d));
     }
 
     @Override
     public double derivative(double d) {
-        return d;
+        return 1.0-Math.pow(d,2);
     }
 }

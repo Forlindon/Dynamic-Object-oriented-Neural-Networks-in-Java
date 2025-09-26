@@ -30,3 +30,5 @@ bin/
 resources
 *.iml
 .idea
+
+Test.java

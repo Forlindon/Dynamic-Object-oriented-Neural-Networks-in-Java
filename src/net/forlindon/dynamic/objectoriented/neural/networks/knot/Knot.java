@@ -34,6 +34,7 @@ public abstract class Knot extends MulTensor {
     }
 
     public abstract double activation(double d);
+    public abstract double derivative(double d);
 
     public void pop() {
         this.val = activation(this.val) + this.BIAS.val;
@@ -46,6 +47,7 @@ public abstract class Knot extends MulTensor {
         for (Connection c : this.OUTBOUND) {
             c.fb();
         }
+        this.grad = this.derivative(this.grad);
     }
 
     public double value() {
