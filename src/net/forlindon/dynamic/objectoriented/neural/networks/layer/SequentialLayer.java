@@ -63,7 +63,7 @@ public class SequentialLayer extends Layer {
 
     @Override
     public void backward(boolean init) {
-        if (init) this.LAYERS.forEach(l -> l.KNOTS.forEach(knot -> knot.pushGrad(1)));
+        if (init) this.LAYERS.forEach(l -> l.KNOTS.forEach(knot -> knot.OUT.pushGrad(1)));
         this.backward();
     }
 
@@ -86,7 +86,13 @@ public class SequentialLayer extends Layer {
 
     @Override
     public String toString() {
-        return String.format("{%s}",this.LAYERS);
+        StringBuilder stringBuilder = new StringBuilder("{\n");
+        for (Layer l : this.LAYERS) {
+            stringBuilder.append(l);
+            stringBuilder.append('\n');
+        }
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
     @Override
@@ -112,5 +118,9 @@ public class SequentialLayer extends Layer {
         for (Layer l : this.LAYERS) {
             l.clean();
         }
+    }
+
+    public Layer getLast() {
+        return this.LAYERS.getLast();
     }
 }

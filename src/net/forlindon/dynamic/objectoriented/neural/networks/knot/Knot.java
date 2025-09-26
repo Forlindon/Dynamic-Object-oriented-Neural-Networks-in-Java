@@ -9,15 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public abstract class Knot extends MulTensor {
+public abstract class Knot {
 
     private final List<Connection> OUTBOUND;
     private final int LAYER_ID;
-    public final Tensor BIAS = new SimpleTensor(Math.random() * 0.5);
+    public final Tensor BIAS = new SimpleTensor(Math.random()*0.1);
+    public final Tensor IN = new MulTensor();
+    public final Tensor OUT;
 
     public Knot(int id) {
         this.LAYER_ID = id;
         this.OUTBOUND = new ArrayList<>();
+        this.OUT = getActivationTensor();
     }
 
     public void connect(Knot other, BiFunction<Knot, Knot, Connection> factory) {
@@ -27,16 +30,14 @@ public abstract class Knot extends MulTensor {
         this.OUTBOUND.add(c);
     }
 
-    @Override
-    public void derivative(Tensor... args) {
-        super.derivative(args);
-        this.BIAS.pushGrad(this.grad);
-    }
-
-    public abstract double activation(double d);
+    public abstract Tensor getActivationTensor();
 
     public void pop() {
-        this.val = activation(this.val) + this.BIAS.val;
+        this.OUT.activate(this.IN,this.BIAS);
+        forward();
+    }
+
+    private void forward() {
         for (Connection c : this.OUTBOUND) {
             c.ff();
         }
@@ -46,15 +47,12 @@ public abstract class Knot extends MulTensor {
         for (Connection c : this.OUTBOUND) {
             c.fb();
         }
-    }
-
-    public double value() {
-        return this.val;
+        this.OUT.derivative(this.IN,this.BIAS);
     }
 
     @Override
     public String toString() {
-        return String.format( "%s{Value: %.2g, Grad: %.2g, Bias: %.2g, Grad: %.2g, Connections: %d}", Knot.class.getSimpleName(), this.val, this.grad, this.BIAS.val, this.BIAS.grad, this.OUTBOUND.size());
+        return String.format( "%s{IN: %s, OUT: %s, BIAS: %s, Connections: %s}", Knot.class.getSimpleName(), this.IN, this.OUT, this.BIAS, this.OUTBOUND);
     }
 
     public double bias() {
@@ -65,13 +63,18 @@ public abstract class Knot extends MulTensor {
         return this.LAYER_ID;
     }
 
-    @Override
-    public void adjust() {
-        super.adjust();
-        this.BIAS.adjust();
+    public void reset() {
+        this.IN.reset();
+        this.OUT.reset();
     }
 
     public List<Connection> getConnections() {
         return new ArrayList<>(this.OUTBOUND);
+    }
+
+    public void add(Connection c) {
+        if (!this.OUTBOUND.contains(c)) {
+            this.OUTBOUND.add(c);
+        }
     }
 }

@@ -21,8 +21,9 @@ public class BaseLayer extends Layer {
     @Override
     public void clean() {
         this.KNOTS.forEach(k -> {
-            k.reset();
             k.BIAS.resetGrad();
+            k.IN.reset();
+            k.OUT.reset();
             k.getConnections().forEach(Tensor::resetGrad);
         });
     }

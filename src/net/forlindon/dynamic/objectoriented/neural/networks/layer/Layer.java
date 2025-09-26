@@ -24,6 +24,12 @@ public abstract class Layer {
         this.KNOTS.add(k);
     }
 
+    public void add(Knot k) {
+        if (k.id() == this.LAYER_ID && !this.KNOTS.contains(k)) {
+            this.KNOTS.add(k);
+        }
+    }
+
     public abstract void forward();
 
     public void fullConnect(Layer other, BiFunction<Knot, Knot, Connection> factory) {
@@ -37,7 +43,7 @@ public abstract class Layer {
     public void readValues(double[] vals) {
         if (vals.length != this.KNOTS.size()) throw new IllegalArgumentException("None matching array length");
         for (int i = 0; i < this.KNOTS.size(); i++) {
-            vals[i] = this.KNOTS.get(i).value();
+            vals[i] = this.KNOTS.get(i).OUT.val;
         }
     }
 
@@ -45,14 +51,15 @@ public abstract class Layer {
         if (this.KNOTS.size() != inputs.length) throw new IllegalArgumentException("Inputs numbers don't match knots");
         for (int i = 0; i < this.KNOTS.size(); i++) {
             Knot k = this.KNOTS.get(i);
-            k.reset();
-            k.push(inputs[i]);
+            k.IN.reset();
+            k.OUT.reset();
+            k.OUT.push(inputs[i]);
             k.pop();
         }
     }
 
     public void backward(boolean init) {
-        if (init) this.KNOTS.forEach(k -> k.pushGrad(1));
+        if (init) this.KNOTS.forEach(k -> k.OUT.pushGrad(1));
         backward();
     }
 
@@ -67,9 +74,12 @@ public abstract class Layer {
         return String.format("{%d: %s}", this.LAYER_ID, this.KNOTS);
     }
 
-    public void adjust() {
+    public void adjust(double d) {
         for (Tensor t : getParameters()) {
-            t.adjust();
+            t.adjust(d);
+        }
+        for (Knot k : getKNOTS()) {
+            k.reset();
         }
     }
 
@@ -80,11 +90,15 @@ public abstract class Layer {
     public List<Tensor> getParameters() {
         List<Tensor> ts = new ArrayList<>();
         for (Knot k : this.getKNOTS()) {
-            ts.add(k.BIAS);
             ts.addAll(k.getConnections());
+            ts.add(k.BIAS);
         }
         return ts;
     }
 
     public abstract void clean();
+
+    public void reset() {
+        this.getKNOTS().forEach(x -> {x.IN.reset(); x.OUT.reset();});
+    }
 }

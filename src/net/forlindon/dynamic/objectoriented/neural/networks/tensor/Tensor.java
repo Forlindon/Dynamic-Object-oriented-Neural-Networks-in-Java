@@ -35,8 +35,8 @@ public abstract class Tensor {
         return String.format("Tensor{Value: %.2g, Grad: %.2g}", this.val, this.grad);
     }
 
-    public void adjust() {
-        this.val -= this.grad;
+    public void adjust(double d) {
+        this.val -= d*this.grad;
         this.grad = 0;
     }
 

@@ -6,4 +6,8 @@ public class BaseConnection extends Connection {
     public BaseConnection(Knot src, Knot dest) {
         super(src, dest);
     }
+    public BaseConnection(Knot src, Knot dest, double w) {
+        super(src,dest);
+        this.val = w;
+    }
 }

@@ -11,7 +11,7 @@ public abstract class Connection extends Tensor {
     public Connection(Knot src,Knot dest) {
         this.src = src;
         this.dest = dest;
-        this.val = Math.random()-0.5;
+        this.val = (Math.random()-0.5)*0.1;
     }
 
     public double grad() {
@@ -23,11 +23,11 @@ public abstract class Connection extends Tensor {
     }
 
     public void ff() {
-        this.dest.activate(this.src, this);
+        this.dest.IN.activate(this.src.OUT, this);
     }
 
     public void fb() {
-        this.dest.derivative(this.src, this);
+        this.dest.IN.derivative(this.src.OUT, this);
     }
 
     @Override
@@ -40,6 +40,6 @@ public abstract class Connection extends Tensor {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Connection c && this.dest == c.dest;
+        return obj instanceof Connection c && this.dest == c.dest && this.src == c.src;
     }
 }
