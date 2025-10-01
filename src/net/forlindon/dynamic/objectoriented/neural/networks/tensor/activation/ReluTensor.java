@@ -12,7 +12,7 @@ public class ReluTensor extends SimpleActivationTensor {
 
     @Override
     public void derivative(Tensor... args) {
-        this.grad*=this.val > 0 ? 1 : 0;
+        this.grad*=(args[0].val+args[1].val) > 0 ? 1 : 0;
         super.derivative(args);
     }
 }
