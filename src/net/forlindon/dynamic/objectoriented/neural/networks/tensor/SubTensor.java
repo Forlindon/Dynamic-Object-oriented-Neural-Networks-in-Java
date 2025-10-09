@@ -1,6 +1,14 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.tensor;
 
-public class SubTensor extends Tensor {
+public class SubTensor extends SimpleTensor {
+    public SubTensor(double v) {
+        super(v);
+    }
+
+    public SubTensor(double v, double grad) {
+        super(v, grad);
+    }
+
     @Override
     public void activate(Tensor... args) {
         this.push(args[0].val-args[1].val);
@@ -10,5 +18,10 @@ public class SubTensor extends Tensor {
     public void derivative(Tensor... args) {
         args[0].pushGrad(this.grad);
         args[1].pushGrad(-this.grad);
+    }
+
+    @Override
+    public Tensor copy() {
+        return new SubTensor(this.val,this.grad);
     }
 }

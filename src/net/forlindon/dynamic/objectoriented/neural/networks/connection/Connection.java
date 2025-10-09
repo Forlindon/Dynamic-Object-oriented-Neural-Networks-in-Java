@@ -5,8 +5,8 @@ import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
 public abstract class Connection extends Tensor {
 
-    Knot src;
-    Knot dest;
+    protected Knot src;
+    protected Knot dest;
 
     public Connection(Knot src,Knot dest) {
         this.src = src;

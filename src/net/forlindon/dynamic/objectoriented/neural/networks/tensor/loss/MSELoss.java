@@ -15,4 +15,9 @@ public class MSELoss extends Tensor {
         args[0].pushGrad(this.grad);
         args[1].pushGrad(-this.grad);
     }
+
+    @Override
+    public Tensor copy() {
+        return new MSELoss();
+    }
 }

@@ -2,7 +2,6 @@ package net.forlindon.dynamic.objectoriented.neural.networks.knot;
 
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.MulTensor;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.SimpleTensor;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
 import java.util.ArrayList;
@@ -11,20 +10,23 @@ import java.util.function.BiFunction;
 
 public abstract class Knot {
 
-    private final List<Connection> OUTBOUND;
+    protected final List<Connection> OUTBOUND;
     private final int LAYER_ID;
-    public final Tensor BIAS = new SimpleTensor(Math.random()*0.1);
-    public final Tensor IN = new MulTensor();
-    public final Tensor OUT;
+    public Tensor BIAS;
+    public Tensor IN = new MulTensor();
+    public Tensor OUT;
 
     public Knot(int id) {
         this.LAYER_ID = id;
         this.OUTBOUND = new ArrayList<>();
         this.OUT = getActivationTensor();
+        this.BIAS = getBIAS();
     }
 
+    public abstract Tensor getBIAS();
+
     public void connect(Knot other, BiFunction<Knot, Knot, Connection> factory) {
-        if (other.LAYER_ID <= this.LAYER_ID) throw new IllegalArgumentException("Invalid LAYER_ID");
+        if (other.LAYER_ID == this.LAYER_ID) throw new IllegalArgumentException("Invalid LAYER_ID");
         Connection c = factory.apply(this, other);
         if (this.OUTBOUND.contains(c)) throw new IllegalArgumentException("No duplicate connections");
         this.OUTBOUND.add(c);

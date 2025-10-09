@@ -31,4 +31,4 @@ resources
 *.iml
 .idea
 
-src/net/forlindon/dynamic/objectoriented/neat/Test.java
+Test.java

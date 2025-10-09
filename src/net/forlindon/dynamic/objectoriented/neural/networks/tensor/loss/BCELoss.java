@@ -18,4 +18,9 @@ public class BCELoss extends Tensor {
         args[0].pushGrad( -( target / y - (1-target) / (1-y) ) );
         args[1].pushGrad(Math.log((1-y)/y));
     }
+
+    @Override
+    public Tensor copy() {
+        return new BCELoss();
+    }
 }

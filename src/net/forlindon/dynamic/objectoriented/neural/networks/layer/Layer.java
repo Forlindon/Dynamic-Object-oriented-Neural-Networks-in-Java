@@ -70,6 +70,11 @@ public abstract class Layer {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Layer l && l.id() == this.id();
+    }
+
+    @Override
     public String toString() {
         return String.format("{%d: %s}", this.LAYER_ID, this.KNOTS);
     }

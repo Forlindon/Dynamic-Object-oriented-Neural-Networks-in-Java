@@ -48,4 +48,6 @@ public abstract class Tensor {
         this.val = 0;
         this.grad = 0;
     }
+
+    public abstract Tensor copy();
 }

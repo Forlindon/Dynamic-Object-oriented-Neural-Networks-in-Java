@@ -35,15 +35,8 @@ public class SequentialLayer extends Layer {
         this.LAYERS.addAll(Arrays.asList(l));
     }
 
-    @Override
-    public void forward() {
-        for (Layer l : this.LAYERS) {
-            l.forward();
-        }
-    }
-
     public void fullConnect(BiFunction<Knot, Knot, Connection> factory) {
-        for (int i = 0; i < this.LAYERS.size()-1; i++) {
+        for (int i = 0; i < this.LAYERS.size(); i++) {
             this.LAYERS.get(i).fullConnect(this.LAYERS.get(i+1), factory);
         }
     }
@@ -51,6 +44,13 @@ public class SequentialLayer extends Layer {
     @Override
     public void fullConnect(Layer other, BiFunction<Knot, Knot, Connection> factory) {
         this.LAYERS.getLast().fullConnect(other,factory);
+    }
+
+    @Override
+    public void forward() {
+        for (Layer l : this.LAYERS) {
+            l.forward();
+        }
     }
 
     @Override
@@ -123,4 +123,14 @@ public class SequentialLayer extends Layer {
     public Layer getLast() {
         return this.LAYERS.getLast();
     }
+
+    public void add(int idx, Function<Integer,Knot> factory) {
+        this.LAYERS.get(idx).add(factory);
+    }
+
+
+    private void addLayer(Layer l) {
+        this.LAYERS.add(l);
+    }
+
 }

@@ -15,4 +15,9 @@ public class ReluTensor extends SimpleActivationTensor {
         this.grad*=(args[0].val+args[1].val) > 0 ? 1 : 0;
         super.derivative(args);
     }
+
+    @Override
+    public Tensor copy() {
+        return new ReluTensor();
+    }
 }

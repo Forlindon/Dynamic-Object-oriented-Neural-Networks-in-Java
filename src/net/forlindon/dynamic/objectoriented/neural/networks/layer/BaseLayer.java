@@ -27,4 +27,5 @@ public class BaseLayer extends Layer {
             k.getConnections().forEach(Tensor::resetGrad);
         });
     }
+
 }

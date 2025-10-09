@@ -15,4 +15,9 @@ public class TanhTensor extends SimpleActivationTensor {
         this.grad*=1-Math.pow(this.val,2);
         super.derivative(args);
     }
+
+    @Override
+    public Tensor copy() {
+        return new TanhTensor();
+    }
 }
