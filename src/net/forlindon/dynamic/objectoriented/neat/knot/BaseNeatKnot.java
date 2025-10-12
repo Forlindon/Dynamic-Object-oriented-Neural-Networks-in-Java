@@ -69,6 +69,7 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
     public BaseNeatKnot copy() {
         BaseNeatKnot baseNeatKnot = new BaseNeatKnot(this.paramSrc, this.inovNum, this.id(), this.OUT.copy(), this.BIAS.copy());
         baseNeatKnot.OUTBOUND.addAll(this.OUTBOUND.stream().map(x -> (BaseNeatConnection) x).map(BaseNeatConnection::copy).toList());
+        baseNeatKnot.OUTBOUND.forEach(x -> ((BaseNeatConnection)x).setSrc(baseNeatKnot));
         return baseNeatKnot;
     }
 }

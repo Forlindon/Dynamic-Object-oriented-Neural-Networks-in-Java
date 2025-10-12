@@ -5,17 +5,16 @@ import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.layer.BaseNeatLayer;
 
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class Genome {
 
     Map<Integer, BaseNeatKnot> NODES;
     Map<Integer, BaseNeatConnection> GENES;
-    BaseNeatLayer layer;
     InnovationSource innovationSource;
 
     public Genome(BaseNeatLayer l) {
-        this.layer = l;
         this.NODES = l.getKNOTS().stream().map(x->(BaseNeatKnot)x).collect(
                 Collectors.toMap(
                         BaseNeatKnot::getInnovationNumber,
@@ -29,6 +28,12 @@ public class Genome {
                 )
         );
         this.innovationSource = l.PARAM_SRC;
+    }
+
+    protected Genome(InnovationSource innovationSource, Map<Integer, BaseNeatKnot> nodes, Map<Integer, BaseNeatConnection> genes) {
+        this.innovationSource = innovationSource;
+        this.NODES = new TreeMap<>(nodes);
+        this.GENES = new TreeMap<>(genes);
     }
 
     @Override
@@ -83,6 +88,6 @@ public class Genome {
     }
 
     public Genome copy() {
-        return new Genome(this.layer.copy());
+        return new Genome(this.innovationSource,this.NODES,this.GENES);
     }
 }

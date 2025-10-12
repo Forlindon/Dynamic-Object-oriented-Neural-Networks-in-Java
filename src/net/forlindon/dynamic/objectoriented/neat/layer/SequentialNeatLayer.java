@@ -102,4 +102,21 @@ public class SequentialNeatLayer extends BaseNeatLayer {
     public SequentialNeatLayer copy() {
         return new SequentialNeatLayer(this.PARAM_SRC,this.neatLayers);
     }
+
+    @Override
+    public void add(Knot k) {
+        int id = k.id();
+        BaseNeatLayer layer = getLayer(id);
+        if (!this.neatLayers.contains(layer)) {
+            this.neatLayers.add(layer);
+        }
+        layer.add(k);
+    }
+
+    public BaseNeatLayer getLayer(int id) {
+        for (BaseNeatLayer baseNeatLayer : this.neatLayers) {
+            if (baseNeatLayer.id() == id) return baseNeatLayer;
+        }
+        return new BaseNeatLayer(this.PARAM_SRC, id);
+    }
 }

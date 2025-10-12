@@ -2,6 +2,7 @@ package net.forlindon.dynamic.objectoriented.neat.connection;
 
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genotype;
 import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
+import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.BaseConnection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 
@@ -39,5 +40,21 @@ public class BaseNeatConnection extends BaseConnection implements Genotype {
     @Override
     public BaseNeatConnection copy() {
         return new BaseNeatConnection(this.inovNum,this.src,this.dest,this.val,this.grad);
+    }
+
+    public void setSrc(BaseNeatKnot baseNeatKnot) {
+        this.src = baseNeatKnot;
+    }
+
+    public BaseNeatKnot src() {
+        return (BaseNeatKnot) this.src;
+    }
+
+    public void setDest(BaseNeatKnot dest) {
+        this.dest = dest;
+    }
+
+    public BaseNeatKnot dest() {
+        return (BaseNeatKnot) this.dest;
     }
 }

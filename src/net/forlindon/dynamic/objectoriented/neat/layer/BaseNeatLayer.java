@@ -68,4 +68,8 @@ public class BaseNeatLayer extends BaseLayer {
         return new BaseNeatLayer(this.PARAM_SRC,this.id(),this.KNOTS);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BaseNeatLayer baseNeatLayer && baseNeatLayer.id() == this.id();
+    }
 }
