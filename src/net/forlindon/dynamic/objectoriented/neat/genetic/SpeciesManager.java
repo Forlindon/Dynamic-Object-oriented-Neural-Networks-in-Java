@@ -1,7 +1,4 @@
 package net.forlindon.dynamic.objectoriented.neat.genetic;
 
-public class Species {
-
-    GenomeManager manger;
-
+public class SpeciesManager {
 }

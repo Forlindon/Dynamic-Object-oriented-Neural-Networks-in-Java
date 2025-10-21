@@ -18,8 +18,8 @@ public class BaseNeatLayer extends BaseLayer {
 
     public final InnovationSource PARAM_SRC;
 
-    public BaseNeatLayer(InnovationSource paramSrc, int id) {
-        super(id);
+    public BaseNeatLayer(InnovationSource paramSrc) {
+        super(paramSrc.getNext());
         this.PARAM_SRC = paramSrc;
     }
 

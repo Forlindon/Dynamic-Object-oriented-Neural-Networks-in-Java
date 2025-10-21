@@ -16,6 +16,7 @@ public class PhenoTypeBuilder {
                 BaseNeatKnot::copy
         ));
         List<BaseNeatConnection> genes = g.GENES.values().stream().map(BaseNeatConnection::copy).toList();
+        genes.forEach(x -> x.setSrc(nodes.get(x.src().getInnovationNumber())));
         genes.forEach(x -> x.setDest(nodes.get(x.dest().getInnovationNumber())));
         SequentialNeatLayer net = new SequentialNeatLayer(g.innovationSource);
         for (BaseNeatKnot baseNeatKnot : nodes.values()) {

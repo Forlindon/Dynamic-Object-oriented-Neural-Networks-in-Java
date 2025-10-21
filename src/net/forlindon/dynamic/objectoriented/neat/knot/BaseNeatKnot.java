@@ -4,7 +4,6 @@ import net.forlindon.dynamic.objectoriented.neat.TriFunction;
 import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genotype;
 import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
-import net.forlindon.dynamic.objectoriented.neat.tensor.NeatSimpleTensor;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.BaseKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
@@ -19,7 +18,6 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
         super(id);
         this.paramSrc = paramSrc;
         this.inovNum = paramSrc.getNext();
-        this.BIAS = getNeatBIAS();
     }
 
     protected BaseNeatKnot(InnovationSource innovationSource,int inovNum, int id, Tensor activation, Tensor bias) {
@@ -27,16 +25,6 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
         this.paramSrc = innovationSource;
         this.inovNum = inovNum;
         this.OUT = activation;
-        this.BIAS = bias;
-    }
-
-    @Override
-    public Tensor getBIAS() {
-        return null;
-    }
-
-    public Tensor getNeatBIAS() {
-        return new NeatSimpleTensor(this.paramSrc, Math.random()*0.1);
     }
 
     @Override
@@ -59,6 +47,11 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
     @Override
     public void mutate() {
         this.BIAS.push(Math.random()*0.1-0.05);
+    }
+
+    @Override
+    public double getMutationRate() {
+        return 0.01;
     }
 
     @Override
