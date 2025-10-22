@@ -2,8 +2,6 @@ package net.forlindon.dynamic.objectoriented.neat.genetic;
 
 import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
-import net.forlindon.dynamic.objectoriented.neat.layer.BaseNeatLayer;
-import net.forlindon.dynamic.objectoriented.neural.networks.layer.Layer;
 
 public class MutationFactory {
 
@@ -32,17 +30,21 @@ public class MutationFactory {
 
             int id = baseNeatConnection.src().id();
             int idIdx = genome.LAYER.indexOf(id) + 1;
-            id = genome.innovationSource.getNext();
-            genome.LAYER.add(idIdx, id);
 
-            BaseNeatKnot mid = new BaseNeatKnot(genome.innovationSource, id);
-            BaseNeatConnection midToDest = new BaseNeatConnection(genome.innovationSource, mid, baseNeatConnection.dest());
+            if (idIdx > 0 && idIdx < genome.LAYER.size()-1) {
 
-            baseNeatConnection.setDest(mid);
-            mid.add(midToDest);
-            genome.GENES.put(midToDest.getInnovationNumber(), midToDest);
+                id = genome.innovationSource.getNext();
+                genome.LAYER.add(idIdx, id);
 
-            genome.NODES.put(id, mid);
+                BaseNeatKnot mid = new BaseNeatKnot(genome.innovationSource, id);
+                BaseNeatConnection midToDest = new BaseNeatConnection(genome.innovationSource, mid, baseNeatConnection.dest());
+
+                baseNeatConnection.setDest(mid);
+                mid.add(midToDest);
+                genome.GENES.put(midToDest.getInnovationNumber(), midToDest);
+
+                genome.NODES.put(id, mid);
+            }
         }
         return genome;
     }

@@ -52,19 +52,4 @@ public class BaseNeatConnection extends BaseConnection implements Genotype {
         return new BaseNeatConnection(this.inovNum,this.src,this.dest,this.val,this.grad,this.isActive);
     }
 
-    public void setSrc(BaseNeatKnot baseNeatKnot) {
-        this.src = baseNeatKnot;
-    }
-
-    public BaseNeatKnot src() {
-        return (BaseNeatKnot) this.src;
-    }
-
-    public void setDest(BaseNeatKnot dest) {
-        this.dest = dest;
-    }
-
-    public BaseNeatKnot dest() {
-        return (BaseNeatKnot) this.dest;
-    }
 }

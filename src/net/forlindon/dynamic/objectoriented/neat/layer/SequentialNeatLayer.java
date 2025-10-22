@@ -11,18 +11,19 @@ import net.forlindon.dynamic.objectoriented.neural.networks.layer.Layer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class SequentialNeatLayer extends BaseNeatLayer {
 
     private final List<BaseNeatLayer> neatLayers;
 
     public SequentialNeatLayer(InnovationSource paramSrc) {
-        super(paramSrc, -1);
+        super(paramSrc);
         this.neatLayers = new ArrayList<>();
     }
 
     protected SequentialNeatLayer(InnovationSource paramSrc, List<BaseNeatLayer> baseNeatLayers) {
-        super(paramSrc, -1);
+        super(paramSrc);
         this.neatLayers = baseNeatLayers.stream().map(BaseNeatLayer::copy).toList();
     }
 
@@ -80,8 +81,8 @@ public class SequentialNeatLayer extends BaseNeatLayer {
         }
     }
 
-    public void addLayer(BiFunction<InnovationSource, Integer, BaseNeatLayer> factory) {
-        this.add(factory.apply(this.PARAM_SRC, this.neatLayers.size()));
+    public void addLayer(Function<InnovationSource, BaseNeatLayer> factory) {
+        this.add(factory.apply(this.PARAM_SRC));
     }
 
     @Override
@@ -117,6 +118,19 @@ public class SequentialNeatLayer extends BaseNeatLayer {
         for (BaseNeatLayer baseNeatLayer : this.neatLayers) {
             if (baseNeatLayer.id() == id) return baseNeatLayer;
         }
-        return new BaseNeatLayer(this.PARAM_SRC, id);
+        return new BaseNeatLayer(this.PARAM_SRC);
+    }
+
+    public BaseNeatLayer getLastLayer() {
+        return this.neatLayers.getLast();
+    }
+
+    public BaseNeatLayer getFirstLayer() {
+        return this.neatLayers.getFirst();
+    }
+
+    @Override
+    public void readValues(double[] vals) {
+        this.getLastLayer().readValues(vals);
     }
 }

@@ -1,5 +1,6 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.connection;
 
+import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
@@ -41,5 +42,21 @@ public abstract class Connection extends Tensor {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Connection c && this.dest == c.dest && this.src == c.src;
+    }
+
+    public void setSrc(BaseNeatKnot baseNeatKnot) {
+        this.src = baseNeatKnot;
+    }
+
+    public BaseNeatKnot src() {
+        return (BaseNeatKnot) this.src;
+    }
+
+    public void setDest(BaseNeatKnot dest) {
+        this.dest = dest;
+    }
+
+    public BaseNeatKnot dest() {
+        return (BaseNeatKnot) this.dest;
     }
 }
