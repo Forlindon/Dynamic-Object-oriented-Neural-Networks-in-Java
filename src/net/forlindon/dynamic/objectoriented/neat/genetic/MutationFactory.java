@@ -32,18 +32,23 @@ public class MutationFactory {
             int idIdx = genome.LAYER.indexOf(id) + 1;
 
             if (idIdx > 0 && idIdx < genome.LAYER.size()-1) {
+                if (Math.random() < 0.5) {
+                    id = genome.innovationSource.getNext();
+                    genome.LAYER.add(idIdx, id);
 
-                id = genome.innovationSource.getNext();
-                genome.LAYER.add(idIdx, id);
+                    BaseNeatKnot mid = new BaseNeatKnot(genome.innovationSource, id);
+                    BaseNeatConnection midToDest = new BaseNeatConnection(genome.innovationSource, mid, baseNeatConnection.dest());
 
-                BaseNeatKnot mid = new BaseNeatKnot(genome.innovationSource, id);
-                BaseNeatConnection midToDest = new BaseNeatConnection(genome.innovationSource, mid, baseNeatConnection.dest());
+                    baseNeatConnection.setDest(mid);
+                    mid.add(midToDest);
+                    genome.GENES.put(midToDest.getInnovationNumber(), midToDest);
 
-                baseNeatConnection.setDest(mid);
-                mid.add(midToDest);
-                genome.GENES.put(midToDest.getInnovationNumber(), midToDest);
-
-                genome.NODES.put(id, mid);
+                    genome.NODES.put(id, mid);
+                }
+                else {
+                    BaseNeatKnot baseNeatKnot = new BaseNeatKnot(genome.innovationSource, genome.LAYER.get((int)(Math.random()*(genome.LAYER.size()-1)+1)));
+                    genome.NODES.put(baseNeatKnot.getInnovationNumber(),baseNeatKnot);
+                }
             }
         }
         return genome;
