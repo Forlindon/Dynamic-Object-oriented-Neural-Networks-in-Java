@@ -6,6 +6,7 @@ import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
+import net.forlindon.dynamic.objectoriented.neural.networks.layer.BaseLayer;
 import net.forlindon.dynamic.objectoriented.neural.networks.layer.Layer;
 
 import java.util.ArrayList;
@@ -18,12 +19,12 @@ public class SequentialNeatLayer extends BaseNeatLayer {
     private final List<BaseNeatLayer> neatLayers;
 
     public SequentialNeatLayer(InnovationSource paramSrc) {
-        super(paramSrc);
+        super(paramSrc, -1);
         this.neatLayers = new ArrayList<>();
     }
 
     protected SequentialNeatLayer(InnovationSource paramSrc, List<BaseNeatLayer> baseNeatLayers) {
-        super(paramSrc);
+        super(paramSrc, -1);
         this.neatLayers = baseNeatLayers.stream().map(BaseNeatLayer::copy).toList();
     }
 
@@ -36,6 +37,7 @@ public class SequentialNeatLayer extends BaseNeatLayer {
 
     @Override
     public void forward(double[] inputs) {
+        this.clean();
         this.neatLayers.getFirst().forward(inputs);
         for (int i = 1; i < this.neatLayers.size(); i++) {
             this.neatLayers.get(i).forward();
@@ -57,8 +59,8 @@ public class SequentialNeatLayer extends BaseNeatLayer {
     }
 
     @Override
-    public List<Knot> getKNOTS() {
-        List<Knot> ks = new ArrayList<>();
+    public List<net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot> getKNOTS() {
+        List<net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot> ks = new ArrayList<>();
         for (Layer l : this.neatLayers) {
             ks.addAll(l.getKNOTS());
         }
@@ -93,7 +95,7 @@ public class SequentialNeatLayer extends BaseNeatLayer {
         this.fullyConnect(BaseNeatConnection::new);
     }
 
-    public void fullyConnect(TriFunction<InnovationSource, Knot, Knot, Connection> factory) {
+    public void fullyConnect(TriFunction<InnovationSource, BaseNeatKnot, BaseNeatKnot, Connection> factory) {
         for (int i = 1; i < this.neatLayers.size(); i++) {
             this.neatLayers.get(i-1).fullConnect(this.neatLayers.get(i),factory);
         }
@@ -108,7 +110,7 @@ public class SequentialNeatLayer extends BaseNeatLayer {
     public void add(Knot k) {
         int id = k.id();
         BaseNeatLayer layer = getLayer(id);
-        if (!this.neatLayers.contains(layer)) {
+        if (this.neatLayers.isEmpty() || !this.neatLayers.contains(layer)) {
             this.neatLayers.add(layer);
         }
         layer.add(k);
@@ -118,7 +120,7 @@ public class SequentialNeatLayer extends BaseNeatLayer {
         for (BaseNeatLayer baseNeatLayer : this.neatLayers) {
             if (baseNeatLayer.id() == id) return baseNeatLayer;
         }
-        return new BaseNeatLayer(this.PARAM_SRC);
+        return new BaseNeatLayer(this.PARAM_SRC, id, new ArrayList<>());
     }
 
     public BaseNeatLayer getLastLayer() {
@@ -132,5 +134,15 @@ public class SequentialNeatLayer extends BaseNeatLayer {
     @Override
     public void readValues(double[] vals) {
         this.getLastLayer().readValues(vals);
+    }
+
+    @Override
+    public String toString() {
+        return this.neatLayers.toString();
+    }
+
+    @Override
+    public void clean() {
+        this.neatLayers.forEach(BaseLayer::clean);
     }
 }

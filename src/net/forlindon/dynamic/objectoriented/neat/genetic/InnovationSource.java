@@ -17,11 +17,11 @@ public class InnovationSource {
 
     @Override
     public String toString() {
-        return this.RANGE.toString();
+        return String.valueOf(this.RANGE.size());
     }
 
     public int getNext() {
-        int r = this.RANGE.size();
+        int r = Integer.MIN_VALUE + this.RANGE.size() - 1;
         this.add(r);
         return r;
     }

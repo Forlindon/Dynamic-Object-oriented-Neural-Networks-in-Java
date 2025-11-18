@@ -1,5 +1,8 @@
 package net.forlindon.dynamic.objectoriented.neat.visuals;
 
+import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
+import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
+import net.forlindon.dynamic.objectoriented.neat.layer.BaseNeatLayer;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.layer.Layer;
@@ -14,12 +17,12 @@ import java.util.stream.Collectors;
 
 public class NetworkDisplay extends JPanel {
 
-    Layer l;
+    NetWrapper wrapper;
 
-    public NetworkDisplay(Layer l) {
-        this.l = l;
+    public NetworkDisplay(NetWrapper l) {
+        this.wrapper = l;
 
-        Timer timer = new Timer(25, _ -> repaint());
+        Timer timer = new Timer(25, _ -> update());
         timer.start();
     }
 
@@ -27,7 +30,20 @@ public class NetworkDisplay extends JPanel {
     public void paint(Graphics graph) {
         super.paint(graph);
         Graphics2D g = (Graphics2D) graph;
-        List<Knot> knots = this.l.getKNOTS();
+
+        Layer l = ((BaseNeatLayer)this.wrapper.get()).copy();
+        Map<Integer, BaseNeatKnot> knotMap = l.getKNOTS().stream().collect(Collectors.toMap(
+                x -> ((BaseNeatKnot) x).getInnovationNumber(),
+                x -> (BaseNeatKnot)x
+        ));
+        for (Tensor t : l.getParameters()) {
+            if (t instanceof BaseNeatConnection c) {
+                c.setSrc(knotMap.get(((BaseNeatKnot)c.src()).getInnovationNumber()));
+                c.setDest(knotMap.get(((BaseNeatKnot)c.dest()).getInnovationNumber()));
+            }
+        }
+        
+        List<Knot> knots = l.getKNOTS();
         List<Integer> ids = knots.stream().map(Knot::id).distinct().toList();
 
         int w = this.getWidth();
@@ -55,7 +71,7 @@ public class NetworkDisplay extends JPanel {
 
         Map<Integer, Long> knotsPerLayer = knots.stream().collect(
                 Collectors.groupingBy(
-                        Knot::id,
+                        net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot::id,
                         Collectors.counting()
                 )
         );
@@ -90,12 +106,13 @@ public class NetworkDisplay extends JPanel {
 
         g.setColor(Color.BLACK);
 
-        for (Tensor par : this.l.getParameters()) {
+        for (Tensor par : l.getParameters()) {
             if (par instanceof Connection c) {
+                if (c instanceof BaseNeatConnection baseNeatConnection && !baseNeatConnection.isActive()) continue;
                 Vec2d src = positions.get(c.src());
                 Vec2d dest = positions.get(c.dest());
 
-                if (c.val == 0) continue;
+                if (c.val == 0 || (c instanceof BaseNeatConnection bc && !bc.isActive())) continue;
 
                 if (c.val < 0) g.setColor(Color.RED);
                 else g.setColor(Color.BLACK);
@@ -104,11 +121,18 @@ public class NetworkDisplay extends JPanel {
             }
         }
 
-        g.setColor(Color.BLUE);
-        for (Vec2d vec : positions.values()) {
+        for (Map.Entry<Knot,Vec2d> entry : positions.entrySet()) {
+            Knot key = entry.getKey();
+            Vec2d vec = entry.getValue();
+            g.setColor(Color.BLUE);
             g.fillOval(vec.x(),vec.y,r,r);
+            g.setColor(Color.BLACK);
+            String disp = key.OUT.getClass().getSimpleName().replace("Tensor","");
+            g.setFont(new Font("TimesRoman", Font.PLAIN, r/disp.length()));
+            int dW = g.getFontMetrics().stringWidth(disp);
+            int offX = r/2-dW/2;
+            g.drawString(disp, vec.x()+offX, vec.y()+r/2+g.getFont().getSize()/2);
         }
-
     }
 
     public synchronized void update() {

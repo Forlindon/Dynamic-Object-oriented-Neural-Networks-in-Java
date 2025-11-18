@@ -18,8 +18,8 @@ public class BaseNeatLayer extends BaseLayer {
 
     public final InnovationSource PARAM_SRC;
 
-    public BaseNeatLayer(InnovationSource paramSrc) {
-        super(paramSrc.getNext());
+    public BaseNeatLayer(InnovationSource paramSrc, int id) {
+        super(id);
         this.PARAM_SRC = paramSrc;
     }
 
@@ -30,31 +30,32 @@ public class BaseNeatLayer extends BaseLayer {
     }
 
     @Override
-    public void add(Function<Integer, Knot> factory) {
+    public void add(Function<Integer, net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot> factory) {
+        throw new RuntimeException("Not valid method for neat");
     }
 
-    public void add(BiFunction<InnovationSource,Integer,BaseNeatKnot> factory) {
+    public void add(BiFunction<InnovationSource,Integer, BaseNeatKnot> factory) {
         this.KNOTS.add(factory.apply(this.PARAM_SRC, this.id()));
     }
 
     @Override
-    public void add(Knot k) {
+    public void add(net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot k) {
         if (k instanceof BaseNeatKnot) super.add(k);
     }
 
     public List<BaseNeatConnection> getGens() {
         List<BaseNeatConnection> gens = new ArrayList<>();
-        for (Knot k : this.KNOTS) {
+        for (net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot k : this.KNOTS) {
             gens.addAll(k.getConnections().stream().map(x -> (BaseNeatConnection) x).toList());
         }
         return gens;
     }
 
-    public void fullConnect(Layer other, TriFunction<InnovationSource, Knot, Knot, Connection> factory) {
-        for (Knot a : this.KNOTS) {
+    public void fullConnect(Layer other, TriFunction<InnovationSource, BaseNeatKnot, BaseNeatKnot, Connection> factory) {
+        for (net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot a : this.KNOTS) {
             BaseNeatKnot c = (BaseNeatKnot) a;
             for (Knot b : other.getKNOTS()) {
-                c.connect(b, factory);
+                c.connect((BaseNeatKnot) b, factory);
             }
         }
     }
@@ -65,7 +66,7 @@ public class BaseNeatLayer extends BaseLayer {
     }
 
     public BaseNeatLayer copy() {
-        return new BaseNeatLayer(this.PARAM_SRC,this.id(),this.KNOTS);
+        return new BaseNeatLayer(this.PARAM_SRC,this.id(),getKNOTS());
     }
 
     @Override

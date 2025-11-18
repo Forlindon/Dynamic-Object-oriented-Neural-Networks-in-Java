@@ -6,6 +6,7 @@ import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 public abstract class Knot {
@@ -54,7 +55,7 @@ public abstract class Knot {
 
     @Override
     public String toString() {
-        return String.format( "%s{IN: %s, OUT: %s, BIAS: %s, Connections: %s}", Knot.class.getSimpleName(), this.IN, this.OUT, this.BIAS, this.OUTBOUND);
+        return String.format( "%s{IN: %s, OUT: %s, BIAS: %s, Connections: %s}", this.getClass().getSimpleName(), this.IN, this.OUT, this.BIAS, this.OUTBOUND);
     }
 
     public double bias() {
@@ -78,5 +79,9 @@ public abstract class Knot {
         if (!this.OUTBOUND.contains(c)) {
             this.OUTBOUND.add(c);
         }
+    }
+
+    public boolean isConnectedTo(Knot o) {
+        return !this.getConnections().stream().map(Connection::dest).filter(knot -> knot.equals(o)).toList().isEmpty();
     }
 }

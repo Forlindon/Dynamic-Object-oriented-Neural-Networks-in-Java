@@ -31,4 +31,4 @@ resources
 *.iml
 .idea
 
-Test.java
+Test*.java

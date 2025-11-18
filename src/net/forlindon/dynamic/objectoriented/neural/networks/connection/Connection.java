@@ -6,10 +6,11 @@ import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
 public abstract class Connection extends Tensor {
 
-    protected Knot src;
-    protected Knot dest;
+    protected net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot src;
+    protected net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot dest;
 
-    public Connection(Knot src,Knot dest) {
+    public Connection(Knot src, Knot dest) {
+        if (src == null || dest == null) throw new RuntimeException(String.format("Src and Dest shall not be null: %s %s", src, dest));
         this.src = src;
         this.dest = dest;
         this.val = (Math.random()-0.5)*0.1;
@@ -44,19 +45,21 @@ public abstract class Connection extends Tensor {
         return obj instanceof Connection c && this.dest == c.dest && this.src == c.src;
     }
 
-    public void setSrc(BaseNeatKnot baseNeatKnot) {
-        this.src = baseNeatKnot;
+    public void setSrc(Knot knot) {
+        if (knot == null) throw new RuntimeException("Src shall not be null");
+        this.src = knot;
     }
 
-    public BaseNeatKnot src() {
-        return (BaseNeatKnot) this.src;
+    public Knot src() {
+        return this.src;
     }
 
-    public void setDest(BaseNeatKnot dest) {
+    public void setDest(Knot dest) {
+        if (dest == null) throw new RuntimeException("Dest shall not be null");
         this.dest = dest;
     }
 
-    public BaseNeatKnot dest() {
-        return (BaseNeatKnot) this.dest;
+    public Knot dest() {
+        return this.dest;
     }
 }

@@ -32,7 +32,7 @@ public abstract class Tensor {
 
     @Override
     public String toString() {
-        return String.format("Tensor{Value: %.2g, Grad: %.2g}", this.val, this.grad);
+        return String.format("{v: %.2g, g: %.2g}", this.val, this.grad);
     }
 
     public void adjust(double d) {

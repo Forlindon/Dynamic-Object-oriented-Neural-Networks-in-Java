@@ -1,7 +1,6 @@
-package net.forlindon.dynamic.objectoriented.neat.tensor;
+package net.forlindon.dynamic.objectoriented.neat.knot;
 
 import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
-import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.SigTensor;
 

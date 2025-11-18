@@ -53,7 +53,7 @@ public abstract class Layer {
             Knot k = this.KNOTS.get(i);
             k.IN.reset();
             k.OUT.reset();
-            k.OUT.push(inputs[i]);
+            k.IN.push(inputs[i]);
             k.pop();
         }
     }
