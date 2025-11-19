@@ -11,9 +11,9 @@ public class SpeciesManager {
 
     private final int MAX_POPULATION;
 
-    public static double c1 = -0.2; // disjoint Genes
-    public static double c2 = -0.2; // excess Genes
-    public static double c3 = 0.9; // weights
+    public static double c1 = 0.1; // disjoint Genes
+    public static double c2 = 0.1; // excess Genes
+    public static double c3 = 0.8; // weights
     public static double c4 = 0.1; // nodes
 
     public SpeciesManager(int maxPopulation) {

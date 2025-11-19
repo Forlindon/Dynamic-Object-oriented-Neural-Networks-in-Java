@@ -96,6 +96,7 @@ public abstract class Layer {
         List<Tensor> ts = new ArrayList<>();
         for (Knot k : this.getKNOTS()) {
             ts.addAll(k.getConnections());
+            ts.add(k.OUT);
             ts.add(k.BIAS);
         }
         return ts;

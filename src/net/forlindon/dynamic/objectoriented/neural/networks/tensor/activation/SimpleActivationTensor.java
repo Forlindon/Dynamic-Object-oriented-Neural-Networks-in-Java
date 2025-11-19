@@ -27,4 +27,7 @@ public class SimpleActivationTensor extends Tensor {
     public Tensor copy() {
         return new SimpleActivationTensor(this.val,this.grad);
     }
+
+    @Override
+    public void adjust(double d) {}
 }

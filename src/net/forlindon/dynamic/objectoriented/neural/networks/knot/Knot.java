@@ -41,15 +41,11 @@ public abstract class Knot {
     }
 
     private void forward() {
-        for (Connection c : this.OUTBOUND) {
-            c.ff();
-        }
+        this.OUTBOUND.forEach(Connection::ff);
     }
 
     public void backward() {
-        for (Connection c : this.OUTBOUND) {
-            c.fb();
-        }
+        this.OUTBOUND.forEach(Connection::fb);
         this.OUT.derivative(this.IN,this.BIAS);
     }
 
