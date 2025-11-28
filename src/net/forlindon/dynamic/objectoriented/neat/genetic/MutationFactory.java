@@ -58,6 +58,7 @@ public final class MutationFactory {
         }
 
         BaseNeatKnot baseNeatKnot = new BaseNeatKnot(genome.innovationSource, idx);
+        baseNeatKnot.OUT = SpeciesManager.getDefaultActivation();
         List<Connection> insert = baseNeatConnection.insert(baseNeatKnot, (a, b) -> new BaseNeatConnection(genome.innovationSource, a, b));
         genome.GENES.put(((BaseNeatConnection)insert.getFirst()).inov(), (BaseNeatConnection) insert.getFirst());
         genome.GENES.put(((BaseNeatConnection)insert.getLast()).inov(), (BaseNeatConnection) insert.getLast());

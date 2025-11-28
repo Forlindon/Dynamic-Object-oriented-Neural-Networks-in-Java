@@ -200,19 +200,19 @@ public class Genome {
     }
 
     public double getNodeMutationAddRate() {
-        return 0.05;
+        return 0.1;
     }
     public double getGeneMutationRate() {
         return 0.8;
     }
     public double getNodeMutationRate() {
-        return 0.7;
+        return 0.2;
     }
     public double getGeneMutationAddRate() {
-        return 0.3;
+        return 0.5;
     }
     public double getAcMutationRate() {
-        return 0.24;
+        return 0.1;
     }
 
     public double getNodes() {

@@ -1,11 +1,16 @@
 package net.forlindon.dynamic.objectoriented.neat.genetic;
 
+import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
+import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.SimpleActivationTensor;
+
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class SpeciesManager {
 
     public static final double SPECIATION_BORDER = 3;
+    private static Supplier<Tensor> DEFAULT_ACTIVATION = SimpleActivationTensor::new;
 
     List<Species> species;
 
@@ -170,5 +175,13 @@ public class SpeciesManager {
 
     public double getAverageFitness() {
         return this.species.stream().mapToDouble(Species::averageFitness).sum()/this.species.size();
+    }
+
+    public static void setDefaultActivation(Supplier<Tensor> supplier) {
+        DEFAULT_ACTIVATION = supplier;
+    }
+
+    public static Tensor getDefaultActivation() {
+        return DEFAULT_ACTIVATION.get();
     }
 }
