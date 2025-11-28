@@ -1,32 +1,25 @@
 package net.forlindon.dynamic.objectoriented.neat.genetic;
 
-import java.util.Set;
 import java.util.TreeSet;
 
 public class InnovationSource {
 
-    private final Set<Integer> RANGE;
+    private int range;
 
     public InnovationSource() {
-        this.RANGE = new TreeSet<>();
-    }
-
-    public void add(int val) {
-        this.RANGE.add(val);
+        this.range = Integer.MIN_VALUE;
     }
 
     @Override
     public String toString() {
-        return String.valueOf(this.RANGE.size());
+        return String.valueOf(this.range-Integer.MIN_VALUE);
     }
 
     public int getNext() {
-        int r = Integer.MIN_VALUE + this.RANGE.size() - 1;
-        this.add(r);
-        return r;
+        return this.range++;
     }
 
     public boolean isInRange(int i) {
-        return this.RANGE.contains(i);
+        return i < this.range;
     }
 }

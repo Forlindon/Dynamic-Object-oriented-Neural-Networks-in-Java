@@ -20,7 +20,7 @@ public class BaseConnection extends Connection {
     }
 
     @Override
-    public Tensor copy() {
+    public Connection copy() {
         return new BaseConnection(this.src,this.dest,this.val,this.grad);
     }
 }

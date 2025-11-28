@@ -5,7 +5,11 @@ import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
 import net.forlindon.dynamic.objectoriented.neat.genetic.MutationFactory;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.BaseConnection;
+import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
+
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class BaseNeatConnection extends BaseConnection implements Genotype {
 
@@ -27,15 +31,15 @@ public class BaseNeatConnection extends BaseConnection implements Genotype {
     }
 
     @Override
-    public int getInnovationNumber() {
+    public int inov() {
         return this.inovNum;
     }
 
     @Override
     public void mutate() {
-        if (Math.random() < 0.9) this.push(MutationFactory.N()*0.1);
-        else this.val = MutationFactory.N()*0.5;
-        if (Math.random() < 0.25) this.isActive = !this.isActive;
+        this.push(MutationFactory.N()*0.1);
+        if (Math.random() < 0.3) this.val = MutationFactory.N();
+        if (Math.random() < 0.1) this.isActive = !this.isActive;
     }
 
     @Override
@@ -45,12 +49,13 @@ public class BaseNeatConnection extends BaseConnection implements Genotype {
 
     @Override
     public double getMutationRate() {
-        return 0.2;
+        return 0.9;
     }
 
     @Override
     public String toString() {
-        return String.format("w: %g", this.val);
+        return Integer.toHexString(System.identityHashCode(dest()));
+        // return String.format("src: %s, dest: %s", Integer.toHexString(System.identityHashCode((BaseNeatKnot)this.src)), Integer.toHexString(System.identityHashCode((BaseNeatKnot)this.dest)));
     }
 
     @Override
@@ -62,4 +67,9 @@ public class BaseNeatConnection extends BaseConnection implements Genotype {
         return this.isActive;
     }
 
+    @Override
+    public List<Connection> insert(Knot b, BiFunction<Knot, Knot, Connection> factory) {
+        this.isActive = false;
+        return super.insert(b, factory);
+    }
 }

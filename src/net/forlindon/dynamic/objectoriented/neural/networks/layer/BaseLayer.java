@@ -1,7 +1,10 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
+import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
+
+import java.util.List;
 
 public class BaseLayer extends Layer {
     public BaseLayer(int id) {
@@ -28,4 +31,13 @@ public class BaseLayer extends Layer {
         });
     }
 
+    @Override
+    public Layer copy() {
+        Layer l = new BaseLayer(this.id());
+        List<Knot> knots = this.getKNOTS();
+        for (Knot k : knots) {
+            l.add(k.copy());
+        }
+        return l;
+    }
 }

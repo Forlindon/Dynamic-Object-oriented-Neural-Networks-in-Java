@@ -107,4 +107,6 @@ public abstract class Layer {
     public void reset() {
         this.getKNOTS().forEach(x -> {x.IN.reset(); x.OUT.reset();});
     }
+
+    public abstract Layer copy();
 }

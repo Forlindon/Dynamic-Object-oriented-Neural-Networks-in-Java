@@ -8,6 +8,7 @@ import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connectio
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.layer.BaseLayer;
 import net.forlindon.dynamic.objectoriented.neural.networks.layer.Layer;
+import net.forlindon.dynamic.objectoriented.neural.networks.layer.SequentialLayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +60,8 @@ public class SequentialNeatLayer extends BaseNeatLayer {
     }
 
     @Override
-    public List<net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot> getKNOTS() {
-        List<net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot> ks = new ArrayList<>();
+    public List<Knot> getKNOTS() {
+        List<Knot> ks = new ArrayList<>();
         for (Layer l : this.neatLayers) {
             ks.addAll(l.getKNOTS());
         }
@@ -103,7 +104,17 @@ public class SequentialNeatLayer extends BaseNeatLayer {
 
     @Override
     public SequentialNeatLayer copy() {
-        return new SequentialNeatLayer(this.PARAM_SRC,this.neatLayers);
+        SequentialNeatLayer sequentialLayer = new SequentialNeatLayer(this.PARAM_SRC);
+        List<Knot> prev = getKNOTS();
+        for (Knot k : prev) {
+            sequentialLayer.add(k.copy());
+        }
+        for (Knot k : sequentialLayer.KNOTS) {
+            for (Connection c : k.getConnections()) {
+                c.setDest(sequentialLayer.KNOTS.get(prev.indexOf(c.dest())));
+            }
+        }
+        return sequentialLayer;
     }
 
     @Override

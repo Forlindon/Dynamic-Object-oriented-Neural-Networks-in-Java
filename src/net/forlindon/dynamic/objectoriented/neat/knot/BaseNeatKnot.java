@@ -7,12 +7,8 @@ import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
 import net.forlindon.dynamic.objectoriented.neat.genetic.MutationFactory;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.BaseKnot;
-import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.ReluTensor;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.SigTensor;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.SimpleActivationTensor;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.TanhTensor;
+import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.*;
 
 public class BaseNeatKnot extends BaseKnot implements Genotype {
 
@@ -46,7 +42,7 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
     }
 
     @Override
-    public int getInnovationNumber() {
+    public int inov() {
         return this.inovNum;
     }
 
@@ -57,17 +53,28 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
 
     @Override
     public double getMutationRate() {
+        return 0.9;
+    }
+
+    public static double getMutationActivationRate() {
         return 0.2;
     }
 
     @Override
     public String toString() {
-        return String.format("%d: %s", this.inovNum, super.toString());
+        // return ""+this.inovNum;
+        // return String.format("%d: %s", this.inovNum, super.toString());
+        return String.format("%d: %s", this.hashCode(), super.toString());
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj instanceof BaseNeatKnot o && this.inovNum == o.inovNum;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.inovNum;
     }
 
     public BaseNeatKnot copy() {
@@ -78,11 +85,12 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
     }
 
     public static void mutateActivation(BaseNeatKnot baseNeatKnot) {
-        int r = (int)(Math.random()*4);
+        int r = (int)(Math.random()*5);
         switch (r) {
             case 0 -> baseNeatKnot.OUT = new ReluTensor();
             case 1 -> baseNeatKnot.OUT = new SigTensor();
             case 2 -> baseNeatKnot.OUT = new TanhTensor();
+            case 3 -> baseNeatKnot.OUT = new ParametricReluTensor(Math.random()-0.5);
             default -> baseNeatKnot.OUT = new SimpleActivationTensor();
         }
     }

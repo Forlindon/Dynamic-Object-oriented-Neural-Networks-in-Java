@@ -1,8 +1,7 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.knot;
 
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.ParametricRelu;
-import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.ReluTensor;
+import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.ParametricReluTensor;
 
 public class ParametricReluKnot extends BaseKnot {
 
@@ -15,7 +14,7 @@ public class ParametricReluKnot extends BaseKnot {
 
     @Override
     public Tensor getActivationTensor() {
-        return new ParametricRelu(this.alpha);
+        return new ParametricReluTensor(this.alpha);
     }
 
 

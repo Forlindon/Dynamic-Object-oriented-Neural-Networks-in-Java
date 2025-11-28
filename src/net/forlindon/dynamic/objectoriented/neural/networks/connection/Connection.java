@@ -1,8 +1,17 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.connection;
 
+import net.forlindon.dynamic.objectoriented.neat.TriFunction;
+import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
+import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
+import net.forlindon.dynamic.objectoriented.neural.networks.knot.BaseKnot;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
+
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Connection extends Tensor {
 
@@ -62,4 +71,15 @@ public abstract class Connection extends Tensor {
     public Knot dest() {
         return this.dest;
     }
+
+    public List<Connection> insert(Knot b, BiFunction<Knot, Knot, Connection> factory) {
+        Knot a = src();
+        Knot c = dest();
+        a.connect(b, factory);
+        b.connect(c, factory);
+        return List.of(a.getConnections().getLast(),b.getConnections().getLast());
+    }
+
+    @Override
+    public abstract Connection copy();
 }

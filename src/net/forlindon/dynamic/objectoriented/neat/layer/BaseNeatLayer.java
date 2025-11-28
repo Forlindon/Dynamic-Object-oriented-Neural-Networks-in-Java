@@ -39,13 +39,13 @@ public class BaseNeatLayer extends BaseLayer {
     }
 
     @Override
-    public void add(net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot k) {
+    public void add(Knot k) {
         if (k instanceof BaseNeatKnot) super.add(k);
     }
 
     public List<BaseNeatConnection> getGens() {
         List<BaseNeatConnection> gens = new ArrayList<>();
-        for (net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot k : this.KNOTS) {
+        for (Knot k : this.KNOTS) {
             gens.addAll(k.getConnections().stream().map(x -> (BaseNeatConnection) x).toList());
         }
         return gens;

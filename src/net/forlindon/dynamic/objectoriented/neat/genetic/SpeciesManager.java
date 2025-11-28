@@ -5,16 +5,16 @@ import java.util.function.Function;
 
 public class SpeciesManager {
 
-    public static final double SPECIATION_BORDER = 1.5;
+    public static final double SPECIATION_BORDER = 3;
 
     List<Species> species;
 
     private final int MAX_POPULATION;
 
-    public static double c1 = 0.1; // disjoint Genes
-    public static double c2 = 0.1; // excess Genes
-    public static double c3 = 0.8; // weights
-    public static double c4 = 0.1; // nodes
+    public static double c1 = 1; // disjoint Genes
+    public static double c2 = 1; // excess Genes
+    public static double c3 = 0.4; // weights
+    // public static double c4 = 0; // nodes
 
     public SpeciesManager(int maxPopulation) {
         this.MAX_POPULATION = maxPopulation;
@@ -27,26 +27,32 @@ public class SpeciesManager {
     }
 
     public void populate() {
-        double[] avFit = this.species.stream().mapToDouble(Species::getFitness).toArray();
+        double[] avFit = this.species.stream().mapToDouble(x -> x.getFitness() / x.genomes.size()).toArray();
         double sum = Arrays.stream(avFit).sum();
-        for (int i = 0; i < avFit.length; i++) {
-            avFit[i] /= sum;
+
+        int[] offspringCount = new int[species.size()];
+        for (int i = 0; i < species.size(); i++) {
+            offspringCount[i] = Math.max(1, (int)(avFit[i] / sum * MAX_POPULATION));
         }
+
         while (getPopulationSize() < MAX_POPULATION) {
-            double offs = 0;
-            double r = Math.random();
-            for (int i = 0; i < avFit.length; i++) {
-                offs += avFit[i];
-                if (Math.random() < offs) {
-                    Species species1 = this.species.get(i);
-                    if (r < 0.75) species1.add(Genome.crossOver(species1.sample(),species1.sample()));
-                    else {
-                        Genome g = species1.sample().copy();
-                        g.copyValues();
-                        species1.add(g);
-                    }
-                }
+            for (int i = 0; i < species.size(); i++) {
+                Species s = species.get(i);
+                if (offspringCount[i] <= 0) continue;
+                addToSpecies(s);
+                offspringCount[i]--;
+                if (getPopulationSize() >= MAX_POPULATION) break;
             }
+        }
+    }
+
+    private void addToSpecies(Species s) {
+        if (Math.random() < 0.75 && s.genomes.size() >= 2) {
+            s.genomes.add(Genome.crossOver(s.getFittest(), s.getSecondFittest()));
+        } else {
+            Genome g = s.sample(0.3).copy();
+            MutationFactory.mutateSelf(g);
+            s.genomes.add(g);
         }
     }
 
@@ -55,25 +61,35 @@ public class SpeciesManager {
     }
 
     public void sort() {
-        List<Genome> notPartOfSpecies = new ArrayList<>();
-        do {
-            for (Species sp : this.species) {
-                notPartOfSpecies.addAll(sp.sortOut());
+        List<Genome> genomes = this.species.stream().map(species1 -> species1.genomes).flatMap(List::stream).toList();
+        this.species.forEach(species1 -> species1.genomes.clear());
+        for (Genome g : genomes) {
+            boolean assigned = false;
+            for (Species s : species) {
+                if (s.contains(g)) {
+                    s.add(g);
+                    assigned = true;
+                    break;
+                }
             }
-            if (notPartOfSpecies.isEmpty()) return;
-            notPartOfSpecies.sort(new GenomeComparator());
-            Genome reference = notPartOfSpecies.get(notPartOfSpecies.size() / 2);
-            Species newSpecies = new Species(this, reference);
-            newSpecies.genomes.addAll(notPartOfSpecies);
-            this.species.add(newSpecies);
-            notPartOfSpecies.clear();
-            notPartOfSpecies.addAll(newSpecies.sortOut());
+            if (assigned) continue;
+            Species next = new Species(this, g);
+            this.species.add(next);
         }
-        while (!notPartOfSpecies.isEmpty());
+        this.species.removeIf(species1 -> species1.genomes.isEmpty());
+        this.species.forEach(s -> {
+            Genome min = s.genomes.getFirst();
+            for (Genome g : s.genomes) {
+                if (s.reference.calcDelta(min) < s.reference.calcDelta(g)) {
+                    min = g;
+                }
+            }
+            s.reference = min;
+        });
     }
 
     public void evaluate(Function<Genome, Double> fitnessSupplier) {
-        this.species.forEach(x -> x.genomes.forEach(y -> y.fitness = fitnessSupplier.apply(y)/x.genomes.size()));
+        this.species.forEach(s -> s.genomes.forEach(y -> y.fitness = fitnessSupplier.apply(y)));
     }
 
     public void removeWeakest() {
@@ -140,8 +156,16 @@ public class SpeciesManager {
         return genomes.getLast();
     }
 
-    public int getSpecies() {
+    public int getNumOfSpecies() {
         return this.species.size();
+    }
+
+    public double getMaxDelta() {
+        return this.species.stream().mapToDouble(Species::calcMaxDelta).max().getAsDouble();
+    }
+
+    public List<Species> getSpecies() {
+        return new ArrayList<>(this.species);
     }
 
     public double getAverageFitness() {

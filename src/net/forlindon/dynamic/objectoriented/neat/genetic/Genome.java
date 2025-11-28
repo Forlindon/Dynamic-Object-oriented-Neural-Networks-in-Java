@@ -3,15 +3,9 @@ package net.forlindon.dynamic.objectoriented.neat.genetic;
 import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.layer.BaseNeatLayer;
-import net.forlindon.dynamic.objectoriented.neat.layer.NeatLinearLayer;
-import net.forlindon.dynamic.objectoriented.neat.layer.SequentialNeatLayer;
-import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Genome {
@@ -23,28 +17,29 @@ public class Genome {
     double fitness = 0;
 
     public Genome(BaseNeatLayer l) {
-        this.NODES = l.getKNOTS().stream().map(x->(BaseNeatKnot)x).collect(
+        this.NODES = new HashMap<>(l.getKNOTS().stream().map(x->(BaseNeatKnot)x).collect(
                 Collectors.toMap(
-                        BaseNeatKnot::getInnovationNumber,
+                        BaseNeatKnot::inov,
                         x -> x
                 )
-        );
-        this.GENES=l.getGens().stream().collect(
+        ));
+        this.GENES=new HashMap<>(l.getGens().stream().collect(
                 Collectors.toMap(
-                        BaseNeatConnection::getInnovationNumber,
+                        BaseNeatConnection::inov,
                         x -> x
                 )
-        );
+        ));
         this.LAYER = l.getKNOTS().stream().map(Knot::id).distinct().collect(Collectors.toList());
         this.innovationSource = l.PARAM_SRC;
     }
 
     protected Genome(InnovationSource innovationSource, Map<Integer, BaseNeatKnot> nodes, Map<Integer, BaseNeatConnection> genes, List<Integer> layer, double fitness) {
         this.innovationSource = innovationSource;
-        this.NODES = new TreeMap<>(nodes);
-        this.GENES = new TreeMap<>(genes);
+        this.NODES = new HashMap<>(nodes);
+        this.GENES = new HashMap<>(genes);
         this.LAYER = new ArrayList<>(layer);
         this.fitness = fitness;
+        copyValues();
     }
 
     public void setFitness(double d) {
@@ -68,16 +63,74 @@ public class Genome {
     }
 
     public double calcDelta(Genome other) {
-        return calcDelta(other, SpeciesManager.c1,SpeciesManager.c2,SpeciesManager.c3,SpeciesManager.c4);
+        return calcDelta(other, SpeciesManager.c1, SpeciesManager.c2, SpeciesManager.c3);
     }
 
-    public double calcDelta(Genome other, double c1, double c2, double c3, double c4) {
+    public double calcDelta(Genome other, double c1, double c2, double c3) {
         int n = getSize(other);
-        int e = getDisjointGens(other);
-        int c = getExcessGens(other);
+        int d = getDisjointGens(other);
+        int e = getExcessGens(other);
         double w = normalizedGenes(other);
-        double a = normalizedNodes(other);
-        return Math.abs(c1 * e/n + c2 * c/n + c3 * w + c4 * a);
+        return (c1 * e + c2 * d)/n + c3 * w;
+    }
+
+    public int getSize(Genome other) {
+        return Math.max(this.GENES.size(),other.GENES.size());
+    }
+
+    public int getDisjointGens(Genome other) {
+        return getDisjointAndExcess(this,other,false);
+    }
+
+    public int getExcessGens(Genome other) {
+        return getDisjointAndExcess(this,other, true);
+    }
+
+    public static int getDisjointAndExcess(Genome g1, Genome g2, boolean excess) {
+        int maxG1 = Collections.max(g1.GENES.keySet());
+        int maxG2 = Collections.max(g2.GENES.keySet());
+        int minG1 = Collections.min(g1.GENES.keySet());
+        int minG2 = Collections.min(g2.GENES.keySet());
+
+        int count = 0;
+
+        if (excess) {
+            for (Integer innov : g1.GENES.keySet()) {
+                if (innov > maxG2) count++;
+            }
+            for (Integer innov : g2.GENES.keySet()) {
+                if (innov > maxG1) count++;
+            }
+        } else {
+            int low = Math.max(minG1, minG2);
+            int high = Math.min(maxG1, maxG2);
+
+            for (Integer innov : g1.GENES.keySet()) {
+                if (innov >= low && innov <= high && !g2.GENES.containsKey(innov)) {
+                    count++;
+                }
+            }
+            for (Integer innov : g2.GENES.keySet()) {
+                if (innov >= low && innov <= high && !g1.GENES.containsKey(innov)) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public double normalizedGenes(Genome other) {
+        double sum = 0;
+        int n = 0;
+        for (Map.Entry<Integer,BaseNeatConnection> entry : this.GENES.entrySet()) {
+            BaseNeatConnection c = other.GENES.get(entry.getKey());
+            if (c != null) {
+                sum += Math.abs(entry.getValue().val - c.val);
+                n++;
+            }
+        }
+        return n != 0 ? sum / n : 0;
     }
 
     private double normalizedNodes(Genome other) {
@@ -97,62 +150,30 @@ public class Genome {
         return sum/n;
     }
 
-    public int getSize(Genome other) {
-        return Math.max(this.GENES.size(),other.GENES.size());
-    }
-
-    public int getDisjointGens(Genome other) {
-        return getNotMatchingGens(this,other);
-    }
-
-    public int getExcessGens(Genome other) {
-        return getNotMatchingGens(other,this);
-    }
-
-    public static int getNotMatchingGens(Genome a, Genome b) {
-        int n = 0;
-        for (Integer i : a.GENES.keySet()) {
-            if (!b.GENES.containsKey(i)) {
-                n++;
-            }
-        }
-        return n;
-    }
-
-    public double normalizedGenes(Genome other) {
-        double sum = 0;
-        int n = 0;
-        for (Map.Entry<Integer,BaseNeatConnection> entry : this.GENES.entrySet()) {
-            BaseNeatConnection c = other.GENES.get(entry.getKey());
-            if (c != null) {
-                sum += entry.getValue().val - c.val;
-                n++;
-            }
-        }
-        return sum / n;
-    }
-
     public Genome copy() {
         return new Genome(this.innovationSource,this.NODES,this.GENES,this.LAYER, this.fitness);
     }
 
     public void copyValues() {
+        this.GENES.clear();
         for (Map.Entry<Integer, BaseNeatKnot> entry : this.NODES.entrySet()) {
-            entry.setValue(entry.getValue().copy());
-            for (Connection connection : entry.getValue().getConnections()) {
-                this.GENES.put(((BaseNeatConnection) connection).getInnovationNumber(), (BaseNeatConnection) connection);
+            BaseNeatKnot baseNeatKnot = entry.getValue().copy();
+            entry.setValue(baseNeatKnot);
+            for (BaseNeatConnection baseNeatConnection : baseNeatKnot.getConnections().stream().map(connection -> (BaseNeatConnection) connection).toList()) {
+                this.GENES.put(baseNeatConnection.inov(), baseNeatConnection);
             }
         }
         for (Map.Entry<Integer,BaseNeatConnection> entry : this.GENES.entrySet()) {
             BaseNeatKnot dest = (BaseNeatKnot) entry.getValue().dest();
-            entry.getValue().setDest(this.NODES.get(dest.getInnovationNumber()));
+            entry.getValue().setDest(this.NODES.get(dest.inov()));
         }
     }
 
     public static Genome crossOver(Genome a, Genome b) {
-        Genome leading = (a.fitness > b.fitness ? a : b).copy();
-        leading.copyValues();
-        Genome trailing = a.fitness < b.fitness ? a : b;
+        Genome leading = (a.fitness > b.fitness ? a : b);
+        Genome trailing = leading == b ? a : b;
+        leading = leading.copy();
+        leading.fitness = (a.fitness+b.fitness)/2;
 
         Map<Integer,BaseNeatConnection> leadingGenes = leading.GENES;
         Map<Integer,BaseNeatConnection> trailingGenes = trailing.GENES;
@@ -179,26 +200,55 @@ public class Genome {
     }
 
     public double getNodeMutationAddRate() {
-        return 0.02;
-    }
-
-    public double getGeneMutationRate() {
-        return 0.9;
-    }
-
-    public double getNodeMutationRate() {
-        return 0.8;
-    }
-
-    public double getGeneMutationAddRate() {
         return 0.05;
     }
-
+    public double getGeneMutationRate() {
+        return 0.8;
+    }
+    public double getNodeMutationRate() {
+        return 0.7;
+    }
+    public double getGeneMutationAddRate() {
+        return 0.3;
+    }
     public double getAcMutationRate() {
-        return 0.01;
+        return 0.24;
     }
 
     public double getNodes() {
         return this.NODES.size();
+    }
+
+    public BaseNeatKnot sampleNode() {
+        List<BaseNeatKnot> list = this.NODES.values().stream().toList();
+        return list.get((int)(Math.random()*list.size()));
+    }
+
+    public BaseNeatKnot sampleNonOutNode() {
+        List<BaseNeatKnot> list = this.NODES.values().stream()
+                .filter(baseNeatKnot -> !baseNeatKnot.getConnections().isEmpty())
+                .toList();
+        return list.get((int)(Math.random()*list.size()));
+    }
+
+    public BaseNeatConnection sampleGene() {
+        List<BaseNeatConnection> list = this.GENES.values().stream().toList();
+        return list.get((int)(Math.random()*list.size()));
+    }
+
+    public Map<Integer, BaseNeatKnot> getNODES() {
+        return NODES;
+    }
+
+    public Map<Integer, BaseNeatConnection> getGENES() {
+        return GENES;
+    }
+
+    public List<Integer> getLAYER() {
+        return LAYER;
+    }
+
+    public InnovationSource getInnovationSource() {
+        return innovationSource;
     }
 }

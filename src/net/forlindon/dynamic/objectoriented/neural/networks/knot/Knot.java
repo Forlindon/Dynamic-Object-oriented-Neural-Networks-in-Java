@@ -80,4 +80,17 @@ public abstract class Knot {
     public boolean isConnectedTo(Knot o) {
         return !this.getConnections().stream().map(Connection::dest).filter(knot -> knot.equals(o)).toList().isEmpty();
     }
+
+    public abstract Knot copy();
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Knot knot)) return false;
+        return LAYER_ID == knot.LAYER_ID && Objects.equals(OUTBOUND, knot.OUTBOUND) && Objects.equals(BIAS, knot.BIAS) && Objects.equals(IN, knot.IN) && Objects.equals(OUT, knot.OUT);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(OUTBOUND, LAYER_ID, BIAS, IN, OUT);
+    }
 }

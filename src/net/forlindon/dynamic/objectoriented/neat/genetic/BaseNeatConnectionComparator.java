@@ -7,6 +7,6 @@ import java.util.Comparator;
 public class BaseNeatConnectionComparator implements Comparator<BaseNeatConnection> {
     @Override
     public int compare(BaseNeatConnection o1, BaseNeatConnection o2) {
-        return Integer.compare(o1.getInnovationNumber(),o2.getInnovationNumber());
+        return Integer.compare(o1.inov(),o2.inov());
     }
 }

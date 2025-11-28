@@ -1,5 +1,6 @@
 package net.forlindon.dynamic.objectoriented.neural.networks.layer;
 
+import net.forlindon.dynamic.objectoriented.neat.layer.BaseNeatLayer;
 import net.forlindon.dynamic.objectoriented.neural.networks.connection.Connection;
 import net.forlindon.dynamic.objectoriented.neural.networks.knot.Knot;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
@@ -118,6 +119,38 @@ public class SequentialLayer extends Layer {
         for (Layer l : this.LAYERS) {
             l.clean();
         }
+    }
+
+    @Override
+    public void add(Knot k) {
+        int id = k.id();
+        Layer layer = getLayer(id);
+        if (this.LAYERS.isEmpty() || !this.LAYERS.contains(layer)) {
+            this.LAYERS.add(layer);
+        }
+        layer.add(k);
+    }
+
+    public Layer getLayer(int id) {
+        for (Layer baseNeatLayer : this.LAYERS) {
+            if (baseNeatLayer.id() == id) return baseNeatLayer;
+        }
+        return new BaseLayer(id);
+    }
+
+    @Override
+    public Layer copy() {
+        SequentialLayer sequentialLayer = new SequentialLayer();
+        List<Knot> prev = getKNOTS();
+        for (Knot k : prev) {
+            sequentialLayer.add(k.copy());
+        }
+        for (Knot k : sequentialLayer.KNOTS) {
+            for (Connection c : k.getConnections()) {
+                c.setDest(sequentialLayer.KNOTS.get(prev.indexOf(c.dest())));
+            }
+        }
+        return sequentialLayer;
     }
 
     public Layer getLast() {

@@ -2,7 +2,7 @@ package net.forlindon.dynamic.objectoriented.neat.genetic;
 
 public interface Genotype {
 
-    int getInnovationNumber();
+    int inov();
 
     void mutate();
 

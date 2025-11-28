@@ -2,11 +2,11 @@ package net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation;
 
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.Tensor;
 
-public class ParametricRelu extends SimpleActivationTensor {
+public class ParametricReluTensor extends SimpleActivationTensor {
 
     double alpha;
 
-    public ParametricRelu(double alpha) {
+    public ParametricReluTensor(double alpha) {
         this.alpha = alpha;
     }
 
@@ -25,7 +25,7 @@ public class ParametricRelu extends SimpleActivationTensor {
 
     @Override
     public Tensor copy() {
-        return new ParametricRelu(this.alpha);
+        return new ParametricReluTensor(this.alpha);
     }
 
     @Override
