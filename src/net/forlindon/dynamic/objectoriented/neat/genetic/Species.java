@@ -61,7 +61,7 @@ public class Species implements Comparable<Species> {
 
     public void removeWeakest() {
         this.genomes.sort(new GenomeFitnessComparator());
-        int removeN = (int) (this.genomes.size()*0.5);
+        int removeN = (this.genomes.size()-2)/2;
         for (int i = 0; i < removeN; i++) {
             this.genomes.removeFirst();
         }

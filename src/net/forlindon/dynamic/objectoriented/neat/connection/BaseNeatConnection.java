@@ -38,8 +38,8 @@ public class BaseNeatConnection extends BaseConnection implements Genotype {
     @Override
     public void mutate() {
         this.push(MutationFactory.N()*0.1);
-        if (Math.random() < 0.3) this.val = MutationFactory.N();
-        if (Math.random() < 0.1) this.isActive = !this.isActive;
+        if (Math.random() < 0.1) this.val = MutationFactory.N();
+        if (Math.random() < 0.08) this.isActive = !this.isActive;
     }
 
     @Override

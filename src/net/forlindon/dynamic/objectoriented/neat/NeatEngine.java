@@ -3,16 +3,14 @@ package net.forlindon.dynamic.objectoriented.neat;
 import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.genetic.*;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
-import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.layer.NeatLinearLayer;
 import net.forlindon.dynamic.objectoriented.neat.layer.SequentialNeatLayer;
 import net.forlindon.dynamic.objectoriented.neat.visuals.NetWrapper;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class NeatEngin {
+public class NeatEngine {
 
     InnovationSource innovationSource = new InnovationSource();
 
@@ -25,7 +23,7 @@ public class NeatEngin {
     int gen = 0;
     int report;
 
-    public NeatEngin(int in, int out, int populationSize, Function<Genome, Double> fitnessSupplier, int report, BiFunction<InnovationSource,Integer,BaseNeatKnot> factory) {
+    public NeatEngine(int in, int out, int populationSize, Function<Genome, Double> fitnessSupplier, int report, BiFunction<InnovationSource,Integer,BaseNeatKnot> factory) {
         this.report = report;
         this.fittnessSupplier = fitnessSupplier;
         this.speciesManager = new SpeciesManager(populationSize);
@@ -42,13 +40,15 @@ public class NeatEngin {
         speciesManager.init(species);
     }
 
-    public void run() {
+    public Genome run() {
         this.speciesManager.evaluate(this.fittnessSupplier);
+        Genome fittest = this.speciesManager.getFittest().copy();
         this.speciesManager.sort();
         this.speciesManager.removeWeakest();
         this.speciesManager.populate();
         this.speciesManager.mutate();
         if (++gen % report == 0) System.out.printf("Gen: %d, Av: %s, Max Delta: %.5g, Species: %d, Inov: %s, Manager: %s\n", gen, speciesManager.averageFitness(), speciesManager.getMaxDelta(), speciesManager.getNumOfSpecies(), innovationSource, speciesManager);
+        return fittest;
     }
 
     public synchronized void update(NetWrapper netWrapper) {
