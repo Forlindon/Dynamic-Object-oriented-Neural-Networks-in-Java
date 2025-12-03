@@ -85,13 +85,11 @@ public class BaseNeatKnot extends BaseKnot implements Genotype {
     }
 
     public static void mutateActivation(BaseNeatKnot baseNeatKnot) {
-        int r = (int)(Math.random()*5);
-        switch (r) {
-            case 0 -> baseNeatKnot.OUT = new ReluTensor();
-            case 1 -> baseNeatKnot.OUT = new SigTensor();
-            case 2 -> baseNeatKnot.OUT = new TanhTensor();
-            case 3 -> baseNeatKnot.OUT = new ParametricReluTensor(Math.random()-0.5);
-            default -> baseNeatKnot.OUT = new SimpleActivationTensor();
-        }
+        double r = Math.random();
+        if (r < 0.1) baseNeatKnot.OUT = new ReluTensor();
+        if (r < 0.2) baseNeatKnot.OUT = new SigTensor();
+        if (r < 0.3) baseNeatKnot.OUT = new TanhTensor();
+        if (r < 0.4) baseNeatKnot.OUT = new ParametricReluTensor(Math.random()-0.5);
+        if (r < 0.5) baseNeatKnot.OUT = new SimpleActivationTensor();
     }
 }

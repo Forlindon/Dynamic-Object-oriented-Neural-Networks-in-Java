@@ -17,7 +17,7 @@ public class Species implements Comparable<Species> {
     }
 
     public boolean contains(Genome genome) {
-        return this.reference.calcDelta(genome) < SpeciesManager.SPECIATION_BORDER;
+        return this.reference.calcDelta(genome, this.speciesManager.c1, this.speciesManager.c2, this.speciesManager.c3) < this.speciesManager.SPECIATION_BORDER;
     }
 
     public void add(Genome ent) {
@@ -74,7 +74,7 @@ public class Species implements Comparable<Species> {
     public double calcMaxDelta() {
         double max = 0;
         for (Genome genome : genomes) {
-            max = Math.max(this.reference.calcDelta(genome), max);
+            max = Math.max(this.reference.calcDelta(genome, this.speciesManager.c1, this.speciesManager.c2, this.speciesManager.c3), max);
         }
         return max;
     }

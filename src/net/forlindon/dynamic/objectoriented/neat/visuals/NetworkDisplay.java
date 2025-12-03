@@ -27,6 +27,8 @@ public class NetworkDisplay extends JPanel {
     public void paint(Graphics graph) {
         super.paint(graph);
 
+        if (this.wrapper.get() == null) return;
+
         Graphics2D g = (Graphics2D) graph;
         Layer layer = this.wrapper.get().copy();
         List<Knot> next = layer.getKNOTS();
@@ -114,6 +116,7 @@ public class NetworkDisplay extends JPanel {
                 g.fillOval(vec.x(), vec.y, r, r);
                 g.setColor(Color.BLACK);
                 String disp = key.OUT.getClass().getSimpleName().replace("Tensor", "");
+                if (disp.equals("SimpleActivation")) continue;
                 g.setFont(new Font("TimesRoman", Font.PLAIN, r / disp.length()));
                 int dW = g.getFontMetrics().stringWidth(disp);
                 int offX = r / 2 - dW / 2;

@@ -12,16 +12,16 @@ import java.util.function.Function;
 
 public class NeatEngin {
 
-    InnovationSource innovationSource = new InnovationSource();
+    protected InnovationSource innovationSource = new InnovationSource();
 
-    SpeciesManager speciesManager;
+    protected SpeciesManager speciesManager;
 
-    PhenoTypeBuilder phenoTypeBuilder = new PhenoTypeBuilder();
+    protected PhenoTypeBuilder phenoTypeBuilder = new PhenoTypeBuilder();
 
-    Function<Genome, Double> fittnessSupplier;
+    protected Function<Genome, Double> fittnessSupplier;
 
-    int gen = 0;
-    int report;
+    protected int gen = 0;
+    protected int report;
 
     public NeatEngin(int in, int out, int populationSize, Function<Genome, Double> fitnessSupplier, int report, BiFunction<InnovationSource,Integer,BaseNeatKnot> factory) {
         this.report = report;
@@ -38,6 +38,8 @@ public class NeatEngin {
         species.add(g);
 
         speciesManager.init(species);
+
+        this.speciesManager.mutate();
     }
 
     public Genome run() {

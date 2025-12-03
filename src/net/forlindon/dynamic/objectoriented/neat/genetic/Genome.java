@@ -62,10 +62,6 @@ public class Genome {
         return String.format("Fit: %g, Layer: %d, Genes: %d, Nodes: %d", this.fitness, this.LAYER.size(), this.GENES.size(), this.NODES.size());
     }
 
-    public double calcDelta(Genome other) {
-        return calcDelta(other, SpeciesManager.c1, SpeciesManager.c2, SpeciesManager.c3);
-    }
-
     public double calcDelta(Genome other, double c1, double c2, double c3) {
         int n = getSize(other);
         int d = getDisjointGens(other);

@@ -9,16 +9,16 @@ import java.util.function.Supplier;
 
 public class SpeciesManager {
 
-    public static final double SPECIATION_BORDER = 3;
+    public double SPECIATION_BORDER = 3;
     private static Supplier<Tensor> DEFAULT_ACTIVATION = SimpleActivationTensor::new;
 
     List<Species> species;
 
     private final int MAX_POPULATION;
 
-    public static double c1 = 1; // disjoint Genes
-    public static double c2 = 1; // excess Genes
-    public static double c3 = 0.4; // weights
+    public double c1 = 1; // disjoint Genes
+    public double c2 = 1; // excess Genes
+    public double c3 = 0.4; // weights
     // public static double c4 = 0; // nodes
 
     public SpeciesManager(int maxPopulation) {
@@ -79,13 +79,14 @@ public class SpeciesManager {
             }
             if (assigned) continue;
             Species next = new Species(this, g);
+            next.add(g);
             this.species.add(next);
         }
         this.species.removeIf(species1 -> species1.genomes.isEmpty());
         this.species.forEach(s -> {
             Genome min = s.genomes.getFirst();
             for (Genome g : s.genomes) {
-                if (s.reference.calcDelta(min) < s.reference.calcDelta(g)) {
+                if (s.reference.calcDelta(min, this.c1, this.c2, this.c3) < s.reference.calcDelta(g, this.c1, this.c2, this.c3)) {
                     min = g;
                 }
             }
