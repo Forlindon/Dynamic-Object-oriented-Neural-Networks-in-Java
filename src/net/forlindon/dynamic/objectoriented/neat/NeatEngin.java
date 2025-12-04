@@ -42,15 +42,22 @@ public class NeatEngin {
         this.speciesManager.mutate();
     }
 
+    public NeatEngin() {
+    }
+
     public Genome run() {
-        this.speciesManager.evaluate(this.fittnessSupplier);
+        evaluate();
         Genome fittest = this.speciesManager.getFittest().copy();
-        this.speciesManager.sort();
-        this.speciesManager.removeWeakest();
-        this.speciesManager.populate();
-        this.speciesManager.mutate();
-        if (++gen % report == 0) System.out.printf("Gen: %d, Av: %s, Max Delta: %.5g, Species: %d, Inov: %s, Manager: %s\n", gen, speciesManager.averageFitness(), speciesManager.getMaxDelta(), speciesManager.getNumOfSpecies(), innovationSource, speciesManager);
+        sort();
+        removeWeakest();
+        populate();
+        mutate();
+        if (++gen % report == 0) report();
         return fittest;
+    }
+
+    private void removeWeakest() {
+        this.speciesManager.removeWeakest();
     }
 
     public synchronized void update(NetWrapper netWrapper) {
@@ -82,4 +89,25 @@ public class NeatEngin {
     public SpeciesManager getSpeciesManager() {
         return speciesManager;
     }
+
+    public void evaluate() {
+        this.speciesManager.evaluate(this.fittnessSupplier);
+    }
+
+    public void sort() {
+        this.speciesManager.sort();
+    }
+
+    public void populate() {
+        this.speciesManager.populate();
+    }
+
+    public void mutate() {
+        this.speciesManager.mutate();
+    }
+
+    public void report() {
+        System.out.printf("Gen: %d, Av: %s, Max Delta: %.5g, Species: %d, Inov: %s, Manager: %s\n", gen, speciesManager.averageFitness(), speciesManager.getMaxDelta(), speciesManager.getNumOfSpecies(), innovationSource, speciesManager);
+    }
+
 }
