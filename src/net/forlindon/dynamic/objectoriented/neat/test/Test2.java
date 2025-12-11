@@ -1,10 +1,10 @@
 package net.forlindon.dynamic.objectoriented.neat.test;
 
 import net.forlindon.dynamic.objectoriented.neat.NeatEngine;
+import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genome;
 import net.forlindon.dynamic.objectoriented.neat.genetic.PhenoType;
 import net.forlindon.dynamic.objectoriented.neat.genetic.SpeciesManager;
-import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.visuals.NetWrapper;
 import net.forlindon.dynamic.objectoriented.neat.visuals.NetworkDisplay;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.TanhTensor;
