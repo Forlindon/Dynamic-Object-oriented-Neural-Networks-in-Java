@@ -1,10 +1,10 @@
 package net.forlindon.dynamic.objectoriented.neat.test;
 
-import net.forlindon.dynamic.objectoriented.neat.NeatEngin;
+import net.forlindon.dynamic.objectoriented.neat.NeatEngine;
+import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genome;
 import net.forlindon.dynamic.objectoriented.neat.genetic.PhenoType;
 import net.forlindon.dynamic.objectoriented.neat.genetic.SpeciesManager;
-import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.visuals.NetWrapper;
 import net.forlindon.dynamic.objectoriented.neat.visuals.NetworkDisplay;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.TanhTensor;
@@ -19,7 +19,7 @@ public class Test2 {
         SpeciesManager.setDefaultActivation(TanhTensor::new);
     }
 
-    public static NeatEngin neatEngin = new NeatEngin(2,1,100, Test2::eval, 1, SigNeatKnot::new);
+    public static NeatEngine neatEngin = new NeatEngine(2,1,100, Test2::eval, 1, SigNeatKnot::new);
 
     static double[][] inputs = {
             {0.0, 0.0},

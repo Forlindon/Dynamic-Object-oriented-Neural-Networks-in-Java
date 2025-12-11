@@ -8,7 +8,7 @@ import java.awt.*;
 public class Test {
 
     public static void main(String[] args) {
-        CardPoleEngin cardPoleEngin = new CardPoleEngin();
+        CardPoleEngine cardPoleEngin = new CardPoleEngine();
         Genome run = null;
         for (int i = 0; i < 100; i++) {
             run = cardPoleEngin.run();

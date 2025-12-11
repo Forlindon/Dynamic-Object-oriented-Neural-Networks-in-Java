@@ -8,14 +8,14 @@ import java.util.List;
 public class Test {
 
     public static void main(String[] args) {
-        Engin engin = new Engin();
+        Engine engine = new Engine();
         for (int i = 0; i < 1000; i++) {
-            engin.run();
+            engine.run();
             if (i % 100 == 99) {
-                engin.evaluate();
-                PhenoTypeBuilder phenoTypeBuilder = engin.getPhenoTypeBuilder();
+                engine.evaluate();
+                PhenoTypeBuilder phenoTypeBuilder = engine.getPhenoTypeBuilder();
                 Environment environment = new Environment();
-                List<Species> speciesList = engin.getSpeciesManager().getSpecies();
+                List<Species> speciesList = engine.getSpeciesManager().getSpecies();
                 for (int k = 0; k < speciesList.size()-1; k++) {
                     System.out.println("########## - " + k + " - ##########");
                     Species spA = speciesList.get(k);

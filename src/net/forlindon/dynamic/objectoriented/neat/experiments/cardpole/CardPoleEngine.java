@@ -1,6 +1,6 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.cardpole;
 
-import net.forlindon.dynamic.objectoriented.neat.NeatEngin;
+import net.forlindon.dynamic.objectoriented.neat.NeatEngine;
 import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.experiments.Pair;
 import net.forlindon.dynamic.objectoriented.neat.genetic.*;
@@ -12,11 +12,11 @@ import net.forlindon.dynamic.objectoriented.neat.layer.SequentialNeatLayer;
 
 import java.util.List;
 
-public class CardPoleEngin extends NeatEngin {
+public class CardPoleEngine extends NeatEngine {
 
     CardPoleEnvironment environment;
 
-    public CardPoleEngin() {
+    public CardPoleEngine() {
         super();
         environment = new CardPoleEnvironment();
         this.report = 1;

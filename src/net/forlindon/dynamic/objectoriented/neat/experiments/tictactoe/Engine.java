@@ -1,13 +1,11 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.tictactoe;
 
-import net.forlindon.dynamic.objectoriented.neat.NeatEngin;
+import net.forlindon.dynamic.objectoriented.neat.NeatEngine;
 import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genome;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Species;
 import net.forlindon.dynamic.objectoriented.neat.genetic.SpeciesManager;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
-import net.forlindon.dynamic.objectoriented.neat.knot.NoiseNeatKnot;
-import net.forlindon.dynamic.objectoriented.neat.knot.ReluNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.layer.NeatLinearLayer;
 import net.forlindon.dynamic.objectoriented.neat.layer.SequentialNeatLayer;
@@ -15,11 +13,11 @@ import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.Re
 
 import java.util.List;
 
-public class Engin extends NeatEngin {
+public class Engine extends NeatEngine {
 
     Environment environment;
 
-    public Engin() {
+    public Engine() {
         super();
         SpeciesManager.setDefaultActivation(ReluTensor::new);
         environment = new Environment();

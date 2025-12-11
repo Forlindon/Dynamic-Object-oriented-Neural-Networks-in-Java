@@ -10,7 +10,7 @@ import net.forlindon.dynamic.objectoriented.neat.visuals.NetWrapper;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class NeatEngin {
+public class NeatEngine {
 
     protected InnovationSource innovationSource = new InnovationSource();
 
@@ -23,7 +23,10 @@ public class NeatEngin {
     protected int gen = 0;
     protected int report;
 
-    public NeatEngin(int in, int out, int populationSize, Function<Genome, Double> fitnessSupplier, int report, BiFunction<InnovationSource,Integer,BaseNeatKnot> factory) {
+    public NeatEngine() {
+    }
+
+    public NeatEngine(int in, int out, int populationSize, Function<Genome, Double> fitnessSupplier, int report, BiFunction<InnovationSource,Integer,BaseNeatKnot> factory) {
         this.report = report;
         this.fittnessSupplier = fitnessSupplier;
         this.speciesManager = new SpeciesManager(populationSize);
@@ -40,9 +43,6 @@ public class NeatEngin {
         speciesManager.init(species);
 
         this.speciesManager.mutate();
-    }
-
-    public NeatEngin() {
     }
 
     public Genome run() {

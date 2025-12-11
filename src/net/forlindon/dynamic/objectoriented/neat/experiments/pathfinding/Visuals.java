@@ -1,6 +1,6 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.pathfinding;
 
-import net.forlindon.dynamic.objectoriented.neat.NeatEngin;
+import net.forlindon.dynamic.objectoriented.neat.NeatEngine;
 import net.forlindon.dynamic.objectoriented.neat.experiments.Pair;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genome;
 import net.forlindon.dynamic.objectoriented.neat.genetic.PhenoType;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class Visuals extends JFrame {
 
     Game game;
-    NeatEngin engin;
+    NeatEngine engin;
     NetWrapper netWrapper = new NetWrapper(null);
 
     public Visuals() {
@@ -26,7 +26,7 @@ public class Visuals extends JFrame {
         this.setLayout(new GridLayout());
         this.add(game);
         this.add(new NetworkDisplay(netWrapper));
-        this.engin = new PathFindingNeatEngin(game, netWrapper);
+        this.engin = new PathFindingNeatEngine(game, netWrapper);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setVisible(true);
