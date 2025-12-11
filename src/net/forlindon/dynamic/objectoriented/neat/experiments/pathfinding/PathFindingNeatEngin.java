@@ -1,12 +1,17 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.pathfinding;
 
 import net.forlindon.dynamic.objectoriented.neat.NeatEngin;
+import net.forlindon.dynamic.objectoriented.neat.connection.BaseNeatConnection;
 import net.forlindon.dynamic.objectoriented.neat.genetic.Genome;
 import net.forlindon.dynamic.objectoriented.neat.genetic.InnovationSource;
+import net.forlindon.dynamic.objectoriented.neat.genetic.Species;
 import net.forlindon.dynamic.objectoriented.neat.genetic.SpeciesManager;
 import net.forlindon.dynamic.objectoriented.neat.knot.BaseNeatKnot;
+import net.forlindon.dynamic.objectoriented.neat.knot.ReluNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.knot.SigNeatKnot;
 import net.forlindon.dynamic.objectoriented.neat.knot.TanhNeatKnot;
+import net.forlindon.dynamic.objectoriented.neat.layer.NeatLinearLayer;
+import net.forlindon.dynamic.objectoriented.neat.layer.SequentialNeatLayer;
 import net.forlindon.dynamic.objectoriented.neat.visuals.NetWrapper;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.ReluTensor;
 import net.forlindon.dynamic.objectoriented.neural.networks.tensor.activation.TanhTensor;
@@ -20,7 +25,7 @@ public class PathFindingNeatEngin extends NeatEngin {
     Game game;
 
     public PathFindingNeatEngin(Game game, NetWrapper netWrapper) {
-        super(6, 2, 300, null, 1, TanhNeatKnot::new);
+        super();
         SpeciesManager.setDefaultActivation(TanhTensor::new);
         this.game = game;
         netWrapper.set(this.phenoTypeBuilder.build(this.speciesManager.getFittest()).get());

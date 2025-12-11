@@ -185,4 +185,8 @@ public class SpeciesManager {
     public static Tensor getDefaultActivation() {
         return DEFAULT_ACTIVATION.get();
     }
+
+    public List<Genome> genomes() {
+        return this.species.stream().map(species1 -> species1.genomes).flatMap(List::stream).toList();
+    }
 }

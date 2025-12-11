@@ -12,7 +12,7 @@ public class Test {
         Genome run = null;
         for (int i = 0; i < 100; i++) {
             run = cardPoleEngin.run();
-            if (run.getFitness() > 1900) break;
+            if (run.getFitness() > 1980) break;
         }
         System.out.println("Finished");
         Genome finalRun = run;
