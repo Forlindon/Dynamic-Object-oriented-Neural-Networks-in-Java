@@ -12,9 +12,11 @@ public class SpeciesManager {
     public double SPECIATION_BORDER = 3;
     private static Supplier<Tensor> DEFAULT_ACTIVATION = SimpleActivationTensor::new;
 
-    List<Species> species;
+    protected List<Species> species;
 
-    private final int MAX_POPULATION;
+    protected final int MAX_POPULATION;
+
+    protected MutationFactory mutationFactory = new MutationFactory();
 
     public double c1 = 1; // disjoint Genes
     public double c2 = 1; // excess Genes
@@ -56,7 +58,7 @@ public class SpeciesManager {
             s.genomes.add(Genome.crossOver(s.getFittest(), s.getSecondFittest()));
         } else {
             Genome g = s.sample(0.3).copy();
-            MutationFactory.mutateSelf(g);
+            this.mutationFactory.mutateSelf(g);
             s.genomes.add(g);
         }
     }
@@ -146,7 +148,7 @@ public class SpeciesManager {
     }
 
     public void mutate() {
-        this.species.forEach(sp -> sp.genomes.forEach(MutationFactory::mutateSelf));
+        this.species.forEach(sp -> sp.genomes.forEach(mutationFactory::mutateSelf));
     }
 
     public double averageFitness() {
@@ -188,5 +190,9 @@ public class SpeciesManager {
 
     public List<Genome> genomes() {
         return this.species.stream().map(species1 -> species1.genomes).flatMap(List::stream).toList();
+    }
+
+    public MutationFactory getMutationFactory() {
+        return this.mutationFactory;
     }
 }

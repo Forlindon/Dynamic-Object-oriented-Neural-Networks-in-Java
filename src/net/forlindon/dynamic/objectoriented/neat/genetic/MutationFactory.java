@@ -9,13 +9,18 @@ import java.util.List;
 
 public final class MutationFactory {
 
+    boolean nodes = false;
+    boolean genes = false;
+    boolean weights = true;
+    boolean activation = false;
+
     public Genome mutate(Genome g) {
         Genome genome = g.copy();
         mutateSelf(genome);
         return genome;
     }
 
-    private static void mutateWeights(Genome genome) {
+    private void mutateWeights(Genome genome) {
         for (BaseNeatConnection baseNeatConnection : genome.GENES.values()) {
             if (Math.random() < baseNeatConnection.getMutationRate()) {
                 baseNeatConnection.mutate();
@@ -23,7 +28,7 @@ public final class MutationFactory {
         }
     }
 
-    private static void mutateBias(Genome genome) {
+    private void mutateBias(Genome genome) {
         for (BaseNeatKnot baseNeatKnot : genome.NODES.values()) {
             if (Math.random() < baseNeatKnot.getMutationRate()) {
                 baseNeatKnot.mutate();
@@ -31,7 +36,7 @@ public final class MutationFactory {
         }
     }
 
-    private static void mutateActivationFunction(Genome genome) {
+    private void mutateActivationFunction(Genome genome) {
         for (BaseNeatKnot baseNeatKnot : genome.NODES.values()) {
             if (baseNeatKnot.id() != genome.LAYER.getFirst() && baseNeatKnot.id() != genome.LAYER.getLast() && BaseNeatKnot.getMutationActivationRate() < Math.random()) {
                 BaseNeatKnot.mutateActivation(baseNeatKnot);
@@ -39,7 +44,7 @@ public final class MutationFactory {
         }
     }
 
-    private static void mutateNodeAdd(Genome genome) {
+    private void mutateNodeAdd(Genome genome) {
         BaseNeatConnection baseNeatConnection = genome.sampleGene();
 
         // Layer ID
@@ -65,7 +70,7 @@ public final class MutationFactory {
         genome.NODES.put(baseNeatKnot.inov(), baseNeatKnot);
     }
 
-    private static void mutateAddGene(Genome genome) {
+    private void mutateAddGene(Genome genome) {
         List<Integer> layers = genome.LAYER;
         List<BaseNeatKnot> knots = genome.NODES.values().stream().toList();
 
@@ -87,19 +92,19 @@ public final class MutationFactory {
         }
     }
 
-    public static void mutateSelf(Genome genome) {
+    public void mutateSelf(Genome genome) {
         // Shift the weights
-        if (Math.random() < genome.getGeneMutationRate()) mutateWeights(genome);
+        if (weights && Math.random() < genome.getGeneMutationRate()) mutateWeights(genome);
         // Shift the bias
-        if (Math.random() < genome.getNodeMutationRate()) mutateBias(genome);
+        if (weights && Math.random() < genome.getNodeMutationRate()) mutateBias(genome);
         // Change Activation Function
-        if (Math.random() < genome.getAcMutationRate() && genome.LAYER.size() > 2) mutateActivationFunction(genome);
+        if (activation && Math.random() < genome.getAcMutationRate() && genome.LAYER.size() > 2) mutateActivationFunction(genome);
         // Change Connection Structure
-        if (Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
-        if (Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
-        if (Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
+        if (genes && Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
+        if (genes && Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
+        if (genes && Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
         // Change Node Structure
-        if (Math.random() < genome.getNodeMutationAddRate()) mutateNodeAdd(genome);
+        if (nodes && Math.random() < genome.getNodeMutationAddRate()) mutateNodeAdd(genome);
     }
 
     public static double N() {
@@ -108,4 +113,35 @@ public final class MutationFactory {
         return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
     }
 
+    public void setNodesAdaptation(boolean nodes) {
+        this.nodes = nodes;
+    }
+
+    public void setGenesAdaptation(boolean genes) {
+        this.genes = genes;
+    }
+
+    public void setWeightsAdaptation(boolean weights) {
+        this.weights = weights;
+    }
+
+    public void setActivationAdaptation(boolean activation) {
+        this.activation = activation;
+    }
+
+    public boolean isAdaptingNodes() {
+        return nodes;
+    }
+
+    public boolean isAdaptingGenes() {
+        return genes;
+    }
+
+    public boolean isAdaptingWeights() {
+        return weights;
+    }
+
+    public boolean isAdaptingActivation() {
+        return activation;
+    }
 }
