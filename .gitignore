@@ -32,3 +32,4 @@ resources
 .idea
 
 Test*.java
+/src/net/forlindon/dynamic/objectoriented/neat/experiments/artifical/life/sim/test/

@@ -13,11 +13,20 @@ public final class MutationFactory {
     boolean genes = false;
     boolean weights = true;
     boolean activation = false;
+    int maxNodes = Integer.MAX_VALUE;
 
     public Genome mutate(Genome g) {
         Genome genome = g.copy();
         mutateSelf(genome);
         return genome;
+    }
+
+    public int getMaxNodes() {
+        return maxNodes;
+    }
+
+    public void setMaxNodes(int maxNodes) {
+        this.maxNodes = maxNodes;
     }
 
     private void mutateWeights(Genome genome) {
@@ -104,7 +113,7 @@ public final class MutationFactory {
         if (genes && Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
         if (genes && Math.random() < genome.getGeneMutationAddRate()) mutateAddGene(genome);
         // Change Node Structure
-        if (nodes && Math.random() < genome.getNodeMutationAddRate()) mutateNodeAdd(genome);
+        if (genome.getNODES().size() < maxNodes && nodes && Math.random() < genome.getNodeMutationAddRate()) mutateNodeAdd(genome);
     }
 
     public static double N() {

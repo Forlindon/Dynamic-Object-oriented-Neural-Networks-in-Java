@@ -23,17 +23,23 @@ public class LadyBugSpeciesManager extends SpeciesManager {
         SequentialNeatLayer sequentialNeatLayer = new SequentialNeatLayer(src);
         SpeciesManager.setDefaultActivation(ReluTensor::new);
         sequentialNeatLayer.addLayer(innovationSource -> new NeatLinearLayer(LadyBug.OBS_SPACE, innovationSource, BaseNeatKnot::new));
-        sequentialNeatLayer.addLayer(innovationSource -> new NeatLinearLayer(64, innovationSource, ReluNeatKnot::new));
+        sequentialNeatLayer.addLayer(innovationSource -> new NeatLinearLayer(32, innovationSource, SigNeatKnot::new));
         BaseNeatLayer out = new BaseNeatLayer(src, src.getNext());
         out.add(TanhNeatKnot::new);
         out.add(TanhNeatKnot::new);
+        out.add(SigNeatKnot::new);
         out.add(SigNeatKnot::new);
         sequentialNeatLayer.add(out);
         sequentialNeatLayer.fullyConnect();
         Genome g = new Genome(sequentialNeatLayer);
         Species species = new Species(this, g);
         species.add(g);
+        this.mutationFactory.setActivationAdaptation(true);
         this.species.add(species);
+        this.SPECIATION_BORDER = 1;
+        this.c1 = 0.3;
+        this.c2 = 0.3;
+        this.c3 = 1;
     }
 
     @Override

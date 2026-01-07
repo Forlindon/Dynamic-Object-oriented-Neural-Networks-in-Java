@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -21,17 +20,20 @@ public class LadyBug extends Entity {
 
     public static final int LADY_BUG_SIZE = BasicTile.TILE_SIZE/2;
     public static final BufferedImage LADY_BUG;
-    public static final int SIGHT_RANGE = BasicTile.TILE_SIZE*10;
-    public static final int SIGHT_DEGREE = 180;
-    public static final int N_RAYS = 20;
+    public static final int SIGHT_RANGE = BasicTile.TILE_SIZE*6;
+    public static final int SIGHT_DEGREE = 90;
+    public static final int N_RAYS = 16;
     public static final int TILE_OBS = 3; // 3x3
-    public static final int OBS_SPACE = 2*N_RAYS + TILE_OBS * TILE_OBS + 4; // Ray_Casts(distance, type) + TILE_OBSxTILE_OBS + HEALTH + HUNGER + VelocityX + VelocityY
-    public static final int ACT_SPACE = 3;
+    public static final int OBS_SPACE = 2*N_RAYS + TILE_OBS * TILE_OBS + 6; // Ray_Casts(distance, type) + TILE_OBSxTILE_OBS + HEALTH + HUNGER + VelocityX + VelocityY + Age + ReproductionTick
+    public static final int ACT_SPACE = 4;
     public static final int TIME_TILL_ACTION = 3;
+    public static final int MAX_AGE = 6*3000; // n * ticks per minute => age
+    public static final int COLOR_SHIFT = 20;
 
     int reproductionTick = 0;
     int actionTick = 0;
 
+    public double[] in = new double[OBS_SPACE];
     public double[] out = new double[ACT_SPACE];
 
     public Color color;
@@ -59,7 +61,6 @@ public class LadyBug extends Entity {
     protected LadyBug (World world, int x, int y, Genome g) {
         super(world, x, y, LADY_BUG_SIZE, LADY_BUG_SIZE);
         set();
-        this.hunger=hungerThreshold;
         this.genome = g;
         this.world.speciesManager.getMutationFactory().mutateSelf(g);
         this.phenoType = this.world.speciesManager.phenoTypeBuilder.build(g);
@@ -69,10 +70,12 @@ public class LadyBug extends Entity {
         this.maxHealth = 20;
         this.health = this.maxHealth;
         this.maxHunger = 320;
-        this.hunger = this.maxHunger/2;
-        this.hungerThreshold = maxHunger-Bush.HUNGER_PER_BERRY; // 320-55 = 265
-        this.reproductionTickThreshold = 40;
-        this.reproductionThreshold = maxHunger - Entity.PASSIVE_HUNGER * reproductionTickThreshold * 2; // 310
+        this.hunger = maxHunger/2;
+        this.hungerThreshold = Bush.HUNGER_PER_BERRY;
+        this.reproductionTickThreshold = 20;
+        this.maxAge = MAX_AGE;
+        this.age = 0;
+        this.reproductionThreshold = maxHunger/2.;
     }
 
     @Override
@@ -117,18 +120,13 @@ public class LadyBug extends Entity {
             this.phenoType.forward(observation,out);
             actionTick=0;
         }
-        if (out[ACT_SPACE-1] >= 0.9) move(new Vec2d(out[0],out[1]));
+        if (wantsToMove()) move(new Vec2d(out[0],out[1]));
 
-        if (health <= 0) {
-            kill();
-            return;
-        }
-
-        if (getTile() instanceof WaterTile || hunger <= 0) health--;
-        if (hunger >= hungerThreshold) health = Math.min(maxHealth, health + HEALTH_REGENERATION_RATE);
+        if (getTile() instanceof WaterTile || hunger >= maxHunger) health--;
+        if (!isHungry()) health = Math.min(maxHealth, health + HEALTH_REGENERATION_RATE);
 
         if (isHungry()) {
-            Optional<Object> any = this.world.getObjects(Bush.class).stream().filter(object -> object.start.sub(this.start).length() < BasicTile.TILE_SIZE*2.0/3.0).findAny();
+            Optional<Object> any = this.world.getObjects(Bush.class).stream().filter(object -> object.getCenter().distance(getCenter()) <= Bush.BUSH_SIZE/2. && ((Bush) object).capacity > 0).findAny();
             any.ifPresent(object -> ((Bush) object).eatBerry(this));
             this.reproductionTick = 0;
         }
@@ -136,43 +134,56 @@ public class LadyBug extends Entity {
         if (canReproduce()) this.reproductionTick++;
         else this.reproductionTick = 0;
 
-        if (reproductionTick >= this.reproductionTickThreshold) {
-            this.reproductionTick = 0;
-            LadyBug ladyBug = new LadyBug(this.world,x(),y(),this.genome.copy());
-            ladyBug.color = new Color(shiftRGB(this.color.getRed()), shiftRGB(this.color.getGreen()), shiftRGB(this.color.getBlue()));
-            this.hunger = maxHunger/2;
-            this.world.OBJECTS_BUFFER.add(ladyBug);
-            this.world.speciesManager.add(ladyBug.genome);
+        if (this.reproductionTick >= this.reproductionTickThreshold) {
+            reproduce();
         }
     }
 
-    private int shiftRGB(int val) {
-        return Math.min(Math.max(0, (int) (val+(Math.random()*2-1))), 255);
+    public boolean wantsToMove() {
+        return this.out[ACT_SPACE-2] > 0.5;
+    }
+
+    public boolean wantsToReproduce() {
+        return this.out[ACT_SPACE-1] > 0.5;
+    }
+
+    public void reproduce() {
+        this.reproductionTick = 0;
+        LadyBug ladyBug = new LadyBug(this.world,x(),y(),this.genome.copy());
+        ladyBug.color = new Color(shiftRGB(this.color.getRed()), shiftRGB(this.color.getGreen()), shiftRGB(this.color.getBlue()));
+        this.hunger += Bush.HUNGER_PER_BERRY/15.;
+        this.world.OBJECTS_BUFFER.add(ladyBug);
+        this.world.speciesManager.add(ladyBug.genome);
+    }
+
+    private static int shiftRGB(int val) {
+        return Math.min(Math.max(0, (int) (val+(Math.random()*COLOR_SHIFT-COLOR_SHIFT/2.))), 255);
     }
 
     public boolean isHungry() {
-        return this.hunger <= hungerThreshold;
+        return this.hunger >= hungerThreshold;
     }
 
     public boolean canReproduce() {
-        return this.hunger > this.reproductionThreshold;
+        return this.hunger < this.hungerThreshold && wantsToReproduce();
     }
 
     @Override
     public void move(Vec2d vec) {
         super.move(vec);
-        if (canMove(vec)) this.hunger-=this.velocity.length()*2./3.;
+        if (canMove(vec)) this.hunger+=this.velocity.length()*2./3.;
     }
 
     public double[] getObservation() {
-        double[] inputs = new double[OBS_SPACE];
 
         int idx = 0;
 
-        inputs[idx++] = this.health;
-        inputs[idx++] = this.hunger;
-        inputs[idx++] = this.velocity.getX();
-        inputs[idx++] = this.velocity.getY();
+        this.in[idx++] = this.health / this.maxHealth;
+        this.in[idx++] = this.hunger / this.maxHunger;
+        this.in[idx++] = (double) this.age / MAX_AGE;
+        this.in[idx++] = (double) this.reproductionTick / this.reproductionTickThreshold;
+        this.in[idx++] = this.velocity.getX();
+        this.in[idx++] = this.velocity.getY();
 
         Vec2d norm = this.velocity.norm();
 
@@ -182,19 +193,19 @@ public class LadyBug extends Entity {
         Vec2d head = new Vec2d(x()+w()/2.0+norm.getX()*radX,y()+h()/2.0+norm.getY()*radY);
         double r = SIGHT_RANGE/2.0;
 
-        for (int degree = 0; degree < SIGHT_DEGREE; degree+=SIGHT_DEGREE/N_RAYS) {
+        for (double degree = 0; degree < SIGHT_DEGREE; degree+= (double) SIGHT_DEGREE / N_RAYS) {
             Vec2d direction = norm.rotateBy(degree-SIGHT_DEGREE/2.0);
             Optional<Object> first = this.world.OBJECTS.stream().filter(object -> object != this && object.inRay(head, direction, r)).min(Comparator.comparingDouble(o -> head.distance(o.getCenter())));
             if (first.isPresent()) {
-                inputs[idx++] = head.distance(first.get().getCenter());
-                inputs[idx++] = first.get().encode();
+                this.in[idx++] = r - head.distance(first.get().getCenter());
+                this.in[idx++] = first.get().encode();
             }
         }
 
         Vec2d center = this.getCenter();
 
         for (int i = 0; i < TILE_OBS*TILE_OBS; i++) {
-            inputs[idx+i] = -1;
+            this.in[idx+i] = -1;
         }
 
         for (int i = -TILE_OBS/2; i < TILE_OBS/2; i++) {
@@ -203,10 +214,10 @@ public class LadyBug extends Entity {
                 int x = (int) (pos.getX()/BasicTile.TILE_SIZE);
                 int y = (int) pos.getY()/BasicTile.TILE_SIZE;
                 if (x < 0 || x > this.world.cols() || y < 0 || y > this.world.rows()) continue;
-                inputs[idx++] = TileType.valueOf(this.world.get(x,y));
+                this.in[idx++] = TileType.valueOf(this.world.get(x,y));
             }
         }
-        return inputs;
+        return this.in;
     }
 
     @Override

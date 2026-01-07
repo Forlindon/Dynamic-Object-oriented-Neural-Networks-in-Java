@@ -61,7 +61,7 @@ public class Bush extends Object {
     public void eatBerry(Entity e) {
         if (this.capacity > 0) {
             this.capacity--;
-            e.hunger = Math.min(e.maxHunger, e.hunger + HUNGER_PER_BERRY);
+            e.hunger = Math.max(0, e.hunger - HUNGER_PER_BERRY);
         }
     }
 

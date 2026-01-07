@@ -12,7 +12,7 @@ public class SpeciesManager {
     public double SPECIATION_BORDER = 3;
     private static Supplier<Tensor> DEFAULT_ACTIVATION = SimpleActivationTensor::new;
 
-    protected List<Species> species;
+    protected final List<Species> species;
 
     protected final int MAX_POPULATION;
 

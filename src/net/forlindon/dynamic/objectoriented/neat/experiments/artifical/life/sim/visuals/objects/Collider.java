@@ -38,20 +38,20 @@ public abstract class Collider {
         return (dX <= this.w() || dX <= other.w()) && (dY <= this.h() || dY <= other.h());
     }
 
-    public boolean inRay(Vec2d start, Vec2d direction, double radius) {
-        if (direction.getX() == 0 && (start.getX() < this.x() || start.getX() > this.x() + this.w())) {
+    public boolean inRay(Vec2d origin, Vec2d direction, double radius) {
+        if (direction.getX() == 0 && (origin.getX() < this.x() || origin.getX() > this.x() + this.w())) {
             return false;
         }
-        else if (direction.getY() == 0 && (start.getY() < this.y() || start.getY() > this.y() + this.h())) {
+        else if (direction.getY() == 0 && (origin.getY() < this.y() || origin.getY() > this.y() + this.h())) {
             return false;
         }
         // x
-        double t1X = direction.getX() == 0 ? Double.POSITIVE_INFINITY : (double) (this.x() - start.getX()) / direction.getX();
-        double t2X = direction.getX() == 0 ? Double.POSITIVE_INFINITY : (double) (this.x() + this.w() - start.getX()) / direction.getX();
+        double t1X = direction.getX() == 0 ? Double.POSITIVE_INFINITY : (double) (this.x() - origin.getX()) / direction.getX();
+        double t2X = direction.getX() == 0 ? Double.POSITIVE_INFINITY : (double) (this.x() + this.w() - origin.getX()) / direction.getX();
 
         // y
-        double t1Y = direction.getY() == 0 ? Double.POSITIVE_INFINITY : (double) (this.y() - start.getY()) / direction.getY();
-        double t2Y = direction.getY() == 0 ? Double.POSITIVE_INFINITY : (double) (this.y() + this.h() - start.getY()) / direction.getY();
+        double t1Y = direction.getY() == 0 ? Double.POSITIVE_INFINITY : (double) (this.y() - origin.getY()) / direction.getY();
+        double t2Y = direction.getY() == 0 ? Double.POSITIVE_INFINITY : (double) (this.y() + this.h() - origin.getY()) / direction.getY();
 
         // tMin/Max
         double tminX = Math.min(t1X, t2X);

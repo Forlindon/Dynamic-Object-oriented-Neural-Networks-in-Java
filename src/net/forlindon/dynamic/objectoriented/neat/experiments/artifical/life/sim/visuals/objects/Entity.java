@@ -14,6 +14,8 @@ public abstract class Entity extends Object {
     double maxHunger;
     double reproductionThreshold;
     double reproductionTickThreshold;
+    int maxAge;
+    int age;
     boolean dead = false;
 
     public static final double PASSIVE_HUNGER = 0.5;
@@ -52,6 +54,10 @@ public abstract class Entity extends Object {
     public void tick() {
         super.tick();
         if (isDead()) return;
-        this.hunger-=PASSIVE_HUNGER;
+        if (health <= 0 || age++ >= maxAge) {
+            kill();
+            return;
+        }
+        this.hunger+=PASSIVE_HUNGER;
     }
 }

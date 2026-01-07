@@ -39,8 +39,8 @@ public class World {
         }
         WorldRule.cleanUp(this);
         this.speciesManager = new LadyBugSpeciesManager();
-        addBushes(sizeX+sizeY/2);
-        spawnEntities(sizeX*5);
+        addBushes(rows()*cols()/16);
+        spawnEntities(rows()*cols()/6);
     }
 
     public synchronized void draw(Graphics2D g2d) {
