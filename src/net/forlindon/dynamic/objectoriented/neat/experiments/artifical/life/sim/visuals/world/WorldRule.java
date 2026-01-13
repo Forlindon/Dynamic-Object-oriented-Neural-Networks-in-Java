@@ -79,7 +79,7 @@ public class WorldRule {
     }
 
     public static void cleanUp(World world) {
-        Grid grid = world.TILE_MAP.copy();
+        Grid grid = world.TILE_MAP;
         for (int y = 0; y < world.rows(); y++) {
             for (int x = 0; x < world.cols(); x++) {
                 BasicTile basicTile = world.get(x,y);

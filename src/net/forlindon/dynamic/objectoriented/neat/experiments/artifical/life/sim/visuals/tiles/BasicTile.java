@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 public abstract class BasicTile {
 
-    public static final int TILE_SIZE = 16;
+    public static final int TILE_SIZE = 20;
 
     BufferedImage bufferedImage;
 

@@ -1,5 +1,7 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals;
 
+import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.neat.BufferEntry;
+import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.utils.RingBuffer;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.objects.LadyBug;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.objects.Object;
 
@@ -14,32 +16,29 @@ import java.io.IOException;
 public class Frame extends JFrame {
 
     Game game;
+    RingBuffer<BufferEntry> BUFFER = new RingBuffer<>(2048);
 
     public Frame() {
-        setTitle("Test-World: " + LadyBug.MAX_AGE / 3000 + "min");
+        setTitle("Test-World: " + LadyBug.MAX_AGE / 1200 + "min");
         setLayout(new GridLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-        this.game = new Game();
+        this.game = new Game(this.BUFFER);
         setContentPane(game);
         pack();
         setResizable(false);
-        gameLoop();
+        startRepainting();
+        startTicking();
+        startCalculating();
     }
 
-    public void gameLoop() {
-        Thread game = new Thread(() -> {
+    public void startRepainting() {
+        Thread repainting = new Thread(() -> {
             final int fps = 50;
             final long frameTime = 1000 / fps;
-            final String path = "src/net/forlindon/dynamic/objectoriented/neat/experiments/artifical/life/sim/test/out";
-
-            int tick = 0;
-            int minute = 0;
 
             while (true) {
                 long start = System.currentTimeMillis();
-
-                this.game.world.tickEverything();
 
                 SwingUtilities.invokeLater(this.game::repaint);
 
@@ -47,8 +46,34 @@ public class Frame extends JFrame {
                 if (sleep > 0) {
                     try {
                         Thread.sleep(sleep);
-                    }
-                    catch (InterruptedException e) {}
+                    } catch (InterruptedException e) {}
+                }
+            }
+        });
+        repainting.setDaemon(true);
+        repainting.start();
+    }
+
+    public void startTicking() {
+        Thread ticking = new Thread(() -> {
+            final int fps = 50;
+            final long frameTime = 1000 / fps;
+            final String path = "src/net/forlindon/dynamic/objectoriented/neat/experiments/artifical/life/sim/test/out";
+
+            int tick = 0;
+            int minute = 0;
+            int ticksPerMinute = (int) (frameTime * 60);
+
+            while (true) {
+                long start = System.currentTimeMillis();
+
+                this.game.world.tickEverything();
+
+                long sleep = frameTime - (System.currentTimeMillis() - start);
+                if (sleep > 0) {
+                    try {
+                        Thread.sleep(sleep);
+                    } catch (InterruptedException e) {}
                 }
                 if (tick++ == 0) {
                     BufferedImage bi = new BufferedImage(this.game.getPreferredSize().width, this.game.getPreferredSize().height,BufferedImage.TYPE_INT_ARGB);
@@ -66,11 +91,29 @@ public class Frame extends JFrame {
                         System.exit(0);
                     }
                 }
-                tick %= 6000;
+                tick %= ticksPerMinute;
             }
         });
-        game.setDaemon(true);
-        game.start();
+        ticking.setDaemon(true);
+        ticking.start();
+    }
+
+    public void  startCalculating() {
+        Thread calculations = new Thread(() -> {
+
+            while (!Thread.currentThread().isInterrupted()) {
+                BufferEntry bufferEntry = this.BUFFER.pop();
+                if (bufferEntry != null) {
+                    bufferEntry.phenoType().forward(bufferEntry.input(), bufferEntry.out());
+                }
+                else {
+                    Thread.onSpinWait();
+                }
+            }
+
+        });
+        calculations.setDaemon(false);
+        calculations.start();
     }
 
     private void tick(ActionEvent e) {

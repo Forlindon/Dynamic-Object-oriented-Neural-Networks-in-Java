@@ -1,5 +1,7 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals;
 
+import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.neat.BufferEntry;
+import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.utils.RingBuffer;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.tiles.BasicTile;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.world.World;
 
@@ -10,11 +12,11 @@ public class Game extends JPanel {
 
     World world;
 
-    public Game() {
+    public Game(RingBuffer<BufferEntry> BUFFER) {
         setPreferredSize(new Dimension(640,640));
         int w = getPreferredSize().width;
         int h = getPreferredSize().height;
-        this.world = new World(w / BasicTile.TILE_SIZE,h / BasicTile.TILE_SIZE);
+        this.world = new World(BUFFER, w / BasicTile.TILE_SIZE,h / BasicTile.TILE_SIZE);
     }
 
     @Override

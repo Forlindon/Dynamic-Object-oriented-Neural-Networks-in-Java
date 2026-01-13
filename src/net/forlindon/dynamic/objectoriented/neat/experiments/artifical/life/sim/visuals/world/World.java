@@ -1,6 +1,8 @@
 package net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.world;
 
+import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.neat.BufferEntry;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.neat.LadyBugSpeciesManager;
+import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.utils.RingBuffer;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.Vec2d;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.objects.Bush;
 import net.forlindon.dynamic.objectoriented.neat.experiments.artifical.life.sim.visuals.objects.Entity;
@@ -19,9 +21,11 @@ public class World {
     public final List<Object> OBJECTS_BUFFER = new ArrayList<>();
     public LadyBugSpeciesManager speciesManager;
 
-    Random random = new Random(0);
+    Random random = new Random();
+    RingBuffer<BufferEntry> BUFFER;
 
-    public World(int sizeX, int sizeY) {
+    public World(RingBuffer<BufferEntry> BUFFER, int sizeX, int sizeY) {
+        this.BUFFER = BUFFER;
         TILE_MAP = new Grid(sizeX,sizeY);
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
@@ -130,4 +134,7 @@ public class World {
         this.OBJECTS_BUFFER.clear();
     }
 
+    public RingBuffer<BufferEntry> getBUFFER() {
+        return this.BUFFER;
+    }
 }

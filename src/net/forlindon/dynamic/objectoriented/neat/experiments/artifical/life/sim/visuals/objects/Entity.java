@@ -18,7 +18,7 @@ public abstract class Entity extends Object {
     int age;
     boolean dead = false;
 
-    public static final double PASSIVE_HUNGER = 0.5;
+    public static final double PASSIVE_HUNGER = 0.2;
 
     public Entity(World world, int x, int y, int w, int h) {
         super(world, x, y, w, h);

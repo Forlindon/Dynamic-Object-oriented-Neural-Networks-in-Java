@@ -23,7 +23,7 @@ public class LadyBugSpeciesManager extends SpeciesManager {
         SequentialNeatLayer sequentialNeatLayer = new SequentialNeatLayer(src);
         SpeciesManager.setDefaultActivation(ReluTensor::new);
         sequentialNeatLayer.addLayer(innovationSource -> new NeatLinearLayer(LadyBug.OBS_SPACE, innovationSource, BaseNeatKnot::new));
-        sequentialNeatLayer.addLayer(innovationSource -> new NeatLinearLayer(32, innovationSource, SigNeatKnot::new));
+        sequentialNeatLayer.addLayer(innovationSource -> new NeatLinearLayer(32, innovationSource, ReluNeatKnot::new));
         BaseNeatLayer out = new BaseNeatLayer(src, src.getNext());
         out.add(TanhNeatKnot::new);
         out.add(TanhNeatKnot::new);
@@ -89,6 +89,6 @@ public class LadyBugSpeciesManager extends SpeciesManager {
 
     @Override
     public String toString() {
-        return String.format("PopulationSize: %d, Species: %d, Max Delta: %g", getPopulationSize(), getNumOfSpecies(), getMaxDelta());
+        return String.format("PopulationSize: %d, Species: %d, Max Delta: %g, Avg. Fitness: %.2g, Max Fitness: %.2g", this.getPopulationSize(), this.getNumOfSpecies(), this.getMaxDelta(), this.getAverageFitness(), this.getFittest().getFitness());
     }
 }
